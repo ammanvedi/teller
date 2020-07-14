@@ -1,15 +1,17 @@
 module Transaction where
 
+import Data.Date
+import Data.Time.Duration
+import Data.Enum
+import Data.Int
+import Data.Maybe
+import Data.Number.Format
+import Data.Ord
+import Data.Ordering
 import Prelude
 
 import Data.List (List)
-import Data.Number.Format
-import Data.Int
-import Data.Ordering
-import Data.Ord
-import Data.Date
-import Data.Enum
-import Data.Maybe
+import Effect.Now (nowDate)
 
 class Directional a where
     outgoing :: a -> Boolean
@@ -56,7 +58,15 @@ getStartOfMonth nowDate = do
     month <- Just $ month nowDate
     day <- toEnum 1
     pure $ canonicalDate year month day
-            
+
+getXDaysPrior :: (Maybe Date) -> Int -> Maybe Date
+getXDaysPrior nowDate priorDays = 
+    case nowDate of 
+        (Just d) -> do
+            days <- Just $ Days $ toNumber priorDays
+            adjusted <- adjust days d
+            pure adjusted
+        Nothing -> Nothing
 
 maybeDateToString :: Maybe Date -> String
 maybeDateToString d = 

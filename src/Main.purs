@@ -1,19 +1,19 @@
 module Main where
 
-import Prelude
-
-import Effect (Effect)
-import Effect.Console (log)
-
-import Transaction (getStartOfMonth, maybeDateToString)
-import Data.List (List)
 import Data.Date
 import Effect.Now
+import Prelude
+
+import Data.List (List)
+import Effect (Effect)
+import Effect.Console (log)
+import Transaction (getStartOfMonth, getXDaysPrior, maybeDateToString)
 
 main :: Effect Unit
 main = do
   now <- nowDate
-  monthStart <- pure $ getStartOfMonth now
-  dateString <- pure $ maybeDateToString monthStart
-  log dateString
+  analysisEndDate <- pure $ getStartOfMonth now
+  analysisStartDate <- pure $ getXDaysPrior analysisEndDate $ -95
+  log $ maybeDateToString analysisEndDate
+  log $ maybeDateToString analysisStartDate
     

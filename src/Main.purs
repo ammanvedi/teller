@@ -7,7 +7,7 @@ import Prelude
 import Data.List (List)
 import Effect (Effect)
 import Effect.Console (log)
-import Transaction (getStartOfMonth, getXDaysPrior, maybeDateToString)
+import DateHelpers (getStartOfMonth, getXDaysPrior, maybeDateToString)
 
 main :: Effect Unit
 main = do

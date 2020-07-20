@@ -1,5 +1,6 @@
 module Test.Transaction where
 
+import Data.Array as Array
 import Data.Set as Set
 import Prelude (Unit, discard)
 import Test.Spec (Spec, describe, it)
@@ -14,6 +15,22 @@ testTransaction = TransactionRec ({
             reference: "BAR X"
         })
 
+testTransactionBarclaysA :: TransactionRec
+testTransactionBarclaysA = TransactionRec ({
+            timestamp: 0,
+            amount: 10.0,
+            merchantName: "Barclays",
+            reference: "BAR X"
+        })
+
+testTransactionBarclaysB :: TransactionRec
+testTransactionBarclaysB = TransactionRec ({
+            timestamp: 0,
+            amount: 100.0,
+            merchantName: "Barclays",
+            reference: "BAR XYZZ"
+        })
+
 testTransactions :: Array TransactionRec
 testTransactions = [
     TransactionRec ({
@@ -22,18 +39,8 @@ testTransactions = [
             merchantName: "TFL",
             reference: "TFL X"
         }),
-    TransactionRec ({
-            timestamp: 0,
-            amount: 10.0,
-            merchantName: "Barclays",
-            reference: "BAR X"
-        }),
-    TransactionRec ({
-            timestamp: 0,
-            amount: 10.0,
-            merchantName: "Barclays",
-            reference: "BAR XY"
-        }),
+    testTransactionBarclaysA,
+    testTransactionBarclaysB,
     TransactionRec ({
             timestamp: 0,
             amount: 10.0,
@@ -47,7 +54,10 @@ transactionSpec =
   describe "Transaction" do
     describe "transactionsForMerchant" do
         it "Returns all transactions for a given merchant" do
-            true `shouldEqual` true
+            let res = transactionsForMerchant testTransactions "Barclays"
+            (Array.length res) `shouldEqual` 2
+            (Array.elem testTransactionBarclaysA res) `shouldEqual` true
+            (Array.elem testTransactionBarclaysB res) `shouldEqual` true
     describe "matchMerchant" do
         it "Returns true for a matching merchant" do
             let res = matchMerchant "Barclays" testTransaction

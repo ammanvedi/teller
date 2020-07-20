@@ -10,6 +10,7 @@ You can edit this file as you like.
   , "datetime"
   , "effect"
   , "enums"
+  , "folds"
   , "integers"
   , "js-date"
   , "lists"

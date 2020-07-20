@@ -1,14 +1,11 @@
 module DateHelpers where
 
-import Data.Date
-import Data.Time.Duration
-import Data.Enum
-import Data.Int
-import Data.Maybe
-import Data.Number.Format
-import Data.Ord
-import Data.Ordering
 import Prelude
+import Data.Date (Date, adjust, canonicalDate, month, year)
+import Data.Enum (toEnum)
+import Data.Int (toNumber)
+import Data.Maybe (Maybe(..))
+import Data.Time.Duration (Days(..))
 
 getStartOfMonth :: Date -> Maybe Date
 getStartOfMonth nowDate = do

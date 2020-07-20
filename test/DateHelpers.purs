@@ -1,22 +1,16 @@
-module Test.Main where
+module Test.Date where
 
 import Data.Date
-import Data.Enum
-import Data.Maybe
-import Effect.Now
-import Prelude
-
-import DateHelpers (getStartOfMonth, getXDaysPrior, maybeDateToString)
-import Effect (Effect)
-import Effect.Aff (launchAff_, delay)
-import Effect.Class.Console (log)
-import Test.Spec (pending, describe, it)
+import Data.Enum (toEnum)
+import Data.Maybe (Maybe(..), fromMaybe)
+import DateHelpers (getStartOfMonth, getXDaysPrior)
+import Prelude (Unit, bind, bottom, discard, negate, pure, ($))
+import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
-import Test.Spec.Reporter.Console (consoleReporter)
-import Test.Spec.Runner (runSpec)
 
-main :: Effect Unit
-main = launchAff_ $ runSpec [consoleReporter] do
+
+dateSpec :: Spec Unit
+dateSpec =
   describe "Date Helpers" do
     describe "getStartOfMonth" do
       it "Returns the first of the month" do

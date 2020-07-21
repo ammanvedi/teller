@@ -75,8 +75,6 @@ getTransactionMonth (TransactionRec { timestamp }) =
         msDuration = Milliseconds $ timestamp
         tInstant = instant msDuration
 
-
-
 transactionsOccurrInSuccessiveMonths :: Array TransactionRec -> Boolean
 transactionsOccurrInSuccessiveMonths [] = false
 transactionsOccurrInSuccessiveMonths [_] = true
@@ -97,3 +95,7 @@ transactionsOccurrInSuccessiveMonths xs =
             t2Month <- getTransactionMonth t2
             succT1 <- succ t1Month
             pure $ t2Month == succT1
+
+sortTransactionsByDate :: Array TransactionRec -> Array TransactionRec
+
+getOutgoingTransactions :: Array TransactionRec -> Array TransactionRec

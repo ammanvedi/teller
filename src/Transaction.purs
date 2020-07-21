@@ -1,32 +1,32 @@
 module Transaction where
 
+import Data.Maybe
 import Prelude
-import Data.Array (filter, foldl)
+
+import Data.Array (filter, foldl, head, tail)
+import Data.Date.Component (Month(..))
+import Data.DateTime (month, date)
+import Data.DateTime.Instant (instant, toDateTime)
+import Data.Enum (succ)
 import Data.Int (toNumber)
+import Data.Interval.Duration (millisecond)
+import Data.JSDate (toInstant)
 import Data.Number.Format (precision, toStringWith)
 import Data.Set as Set
+import Data.Time.Duration (Milliseconds(..), convertDuration, fromDuration)
 
 class Directional a where
     outgoing :: a -> Boolean
 
 newtype TransactionRec =
     TransactionRec {
-        timestamp :: Int,
+        timestamp :: Number,
         amount :: Number,
         merchantName :: String,
         reference :: String
     }
 
 newtype TransactionList = TransactionList (Array TransactionRec)
-
-
-testTransactionList :: TransactionRec
-testTransactionList = TransactionRec ({
-            timestamp: 0,
-            amount: 10.0,
-            merchantName: "Barclays",
-            reference: "BAR X"
-        })
 
 instance transactionDirectional :: Directional TransactionRec where
     outgoing (TransactionRec {amount}) = amount >= toNumber 0
@@ -44,7 +44,7 @@ instance transactionShow :: Show TransactionRec where
         = transactionTime <> " " <> merchantName <> " " <> transactionAmount
         where
             transactionAmount = toStringWith (precision 6) amount
-            transactionTime = toStringWith (precision 6) $ toNumber timestamp
+            transactionTime = toStringWith (precision 6) $ timestamp
 
 instance transactionOrd :: Ord TransactionRec where
     compare
@@ -64,3 +64,36 @@ matchMerchant m (TransactionRec {merchantName}) = merchantName == m
 uniqueMerchants :: Array TransactionRec -> Set.Set String
 uniqueMerchants xs = 
             foldl (\accSet (TransactionRec t) -> Set.insert t.merchantName accSet) Set.empty xs
+
+getTransactionMonth :: TransactionRec -> Maybe Month
+getTransactionMonth (TransactionRec { timestamp }) =
+    case tInstant of
+        Just instant ->
+            Just (month $ date $ toDateTime instant)
+        Nothing -> Nothing
+    where
+        msDuration = Milliseconds $ timestamp
+        tInstant = instant msDuration
+
+
+
+transactionsOccurrInSuccessiveMonths :: Array TransactionRec -> Boolean
+transactionsOccurrInSuccessiveMonths [] = false
+transactionsOccurrInSuccessiveMonths [_] = true
+transactionsOccurrInSuccessiveMonths xs =
+    case chainHoldsToNextMonth of
+        (Just holds) ->
+            case holds of
+                true -> transactionsOccurrInSuccessiveMonths unwrapTail
+                false -> false
+        Nothing -> false
+    where
+        unwrapTail = fromMaybe [] $ tail xs
+        chainHoldsToNextMonth = do
+            t1 <- head xs
+            tailXs <- tail xs
+            t2 <- head tailXs
+            t1Month <- getTransactionMonth t1
+            t2Month <- getTransactionMonth t2
+            succT1 <- succ t1Month
+            pure $ t2Month == succT1

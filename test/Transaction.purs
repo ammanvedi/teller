@@ -1,15 +1,17 @@
 module Test.Transaction where
 
 import Data.Array as Array
+import Data.Date (Month(..))
+import Data.Maybe (fromMaybe)
 import Data.Set as Set
 import Prelude (Unit, discard)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
-import Transaction (TransactionRec(..), matchMerchant, transactionsForMerchant, uniqueMerchants)
+import Transaction (TransactionRec(..), matchMerchant, transactionsForMerchant, uniqueMerchants, getTransactionMonth, transactionsOccurrInSuccessiveMonths)
 
 testTransaction :: TransactionRec
 testTransaction = TransactionRec ({
-            timestamp: 0,
+            timestamp: 1595361449000.0,
             amount: 10.0,
             merchantName: "Barclays",
             reference: "BAR X"
@@ -17,7 +19,7 @@ testTransaction = TransactionRec ({
 
 testTransactionBarclaysA :: TransactionRec
 testTransactionBarclaysA = TransactionRec ({
-            timestamp: 0,
+            timestamp: 1582317957000.0,
             amount: 10.0,
             merchantName: "Barclays",
             reference: "BAR X"
@@ -25,7 +27,7 @@ testTransactionBarclaysA = TransactionRec ({
 
 testTransactionBarclaysB :: TransactionRec
 testTransactionBarclaysB = TransactionRec ({
-            timestamp: 0,
+            timestamp: 1584823557000.0,
             amount: 100.0,
             merchantName: "Barclays",
             reference: "BAR XYZZ"
@@ -34,7 +36,7 @@ testTransactionBarclaysB = TransactionRec ({
 testTransactions :: Array TransactionRec
 testTransactions = [
     TransactionRec ({
-            timestamp: 0,
+            timestamp: 1579639557000.0,
             amount: 10.0,
             merchantName: "TFL",
             reference: "TFL X"
@@ -42,7 +44,7 @@ testTransactions = [
     testTransactionBarclaysA,
     testTransactionBarclaysB,
     TransactionRec ({
-            timestamp: 0,
+            timestamp: 1587501957000.0,
             amount: 10.0,
             merchantName: "Netflix",
             reference: "BAR XY"
@@ -72,3 +74,22 @@ transactionSpec =
             (Set.member "Barclays" res) `shouldEqual` true
             (Set.member "Netflix" res) `shouldEqual` true
             (Set.member "TFL" res) `shouldEqual` true
+    describe "getTransactionMonth" do
+        it "Returns the correct month" do
+            let res = getTransactionMonth testTransaction
+            let resUnwrap = fromMaybe January res
+            resUnwrap `shouldEqual` July
+    describe "transactionsOccurrInSuccessiveMonths" do
+        it "returns true when transactions are in successive months" do
+            let res = transactionsOccurrInSuccessiveMonths testTransactions
+            res `shouldEqual` true
+        it "returns false when transactions are not in successive months" do
+            let res = transactionsOccurrInSuccessiveMonths [
+                    testTransactionBarclaysB,
+                    testTransactionBarclaysA
+                ]
+            res `shouldEqual` false
+        it "returns false for a empty array" do
+            let res = transactionsOccurrInSuccessiveMonths []
+            res `shouldEqual` false
+    

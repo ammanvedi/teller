@@ -7,8 +7,10 @@ import Test.Date (dateSpec)
 import Test.Spec.Reporter (specReporter)
 import Test.Spec.Runner (runSpec)
 import Test.Transaction (transactionSpec)
+import Test.SignalProcessing (signalProcessingSpec)
 
 main :: Effect Unit
 main = launchAff_ $ runSpec [specReporter] do
     dateSpec
     transactionSpec
+    signalProcessingSpec

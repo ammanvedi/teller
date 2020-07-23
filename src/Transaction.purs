@@ -3,7 +3,7 @@ module Transaction where
 import Data.Maybe
 import Prelude
 
-import Data.Array (filter, foldl, head, tail)
+import Data.Array (filter, foldl, head, reverse, sort, tail)
 import Data.Date.Component (Month(..))
 import Data.DateTime (month, date)
 import Data.DateTime.Instant (instant, toDateTime)
@@ -96,6 +96,8 @@ transactionsOccurrInSuccessiveMonths xs =
             succT1 <- succ t1Month
             pure $ t2Month == succT1
 
-sortTransactionsByDate :: Array TransactionRec -> Array TransactionRec
+sortTransactionsByDateDesc :: Array TransactionRec -> Array TransactionRec
+sortTransactionsByDateDesc xs = sort xs
 
-getOutgoingTransactions :: Array TransactionRec -> Array TransactionRec
+getOutgoingTransactions :: forall a. Directional a => Array a -> Array a
+getOutgoingTransactions xs = filter outgoing xs

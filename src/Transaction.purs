@@ -1,19 +1,17 @@
 module Transaction where
 
-import Data.Maybe
+import Data.Maybe (Maybe(..), fromMaybe)
 import Prelude
 
-import Data.Array (filter, foldl, head, reverse, sort, tail)
-import Data.Date.Component (Month(..))
+import Data.Array (filter, foldl, head, sort, tail)
+import Data.Date.Component (Month)
 import Data.DateTime (month, date)
 import Data.DateTime.Instant (instant, toDateTime)
 import Data.Enum (succ)
 import Data.Int (toNumber)
-import Data.Interval.Duration (millisecond)
-import Data.JSDate (toInstant)
 import Data.Number.Format (precision, toStringWith)
 import Data.Set as Set
-import Data.Time.Duration (Milliseconds(..), convertDuration, fromDuration)
+import Data.Time.Duration (Milliseconds(..))
 
 class Directional a where
     outgoing :: a -> Boolean

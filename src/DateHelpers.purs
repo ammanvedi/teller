@@ -26,5 +26,5 @@ getXDaysPrior nowDate priorDays =
 maybeDateToString :: Maybe Date -> String
 maybeDateToString d = 
     case d of 
-        (Just d) -> show d
+        (Just dt) -> show dt
         Nothing -> "NODATE"

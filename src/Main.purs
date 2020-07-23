@@ -1,13 +1,11 @@
 module Main where
 
-import Data.Date
-import Effect.Now
 import Prelude
 
-import Data.List (List)
+import DateHelpers (getStartOfMonth, getXDaysPrior, maybeDateToString)
 import Effect (Effect)
 import Effect.Console (log)
-import DateHelpers (getStartOfMonth, getXDaysPrior, maybeDateToString)
+import Effect.Now (nowDate)
 
 main :: Effect Unit
 main = do

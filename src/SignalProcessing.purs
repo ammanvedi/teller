@@ -3,10 +3,9 @@ module SignalProcessing where
 import Prelude
 
 import Data.Array (index, length, mapWithIndex, slice)
-import Data.Foldable (foldl, sum)
+import Data.Foldable (sum)
 import Data.Int (toNumber)
 import Data.Maybe (Maybe(..))
-import Data.Tuple (Tuple(..))
 
 atIndex :: Array Number -> Int -> Number
 atIndex xs n = 
@@ -27,11 +26,11 @@ varianceProduct yi yj yMean = (yi - yMean) * (yj - yMean)
 
 seriesVariances :: Int -> Number -> Array Number -> Array Number
 seriesVariances k mean xs = 
-    mapWithIndex (\ i yi -> varianceProduct yi (arrValAt $ i - k) mean ) remainderSeries
+    mapWithIndex (\ i yi -> varianceProduct yi (arrValAt $ i + k) mean ) remainderSeries
     where
         arrValAt = atIndex xs
         arrLen = length xs
-        remainderSeries = slice (k + 1) arrLen xs
+        remainderSeries = slice 0 (arrLen - k) xs
 
 autoCoVarianceAtK :: Int -> Number -> Array Number -> Number
 autoCoVarianceAtK k mean xs = (sum variances) / toNumber (length xs)

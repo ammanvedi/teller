@@ -2,11 +2,13 @@ module SignalProcessing where
 
 import Prelude
 
-import Data.Array (filter, index, last, length, mapWithIndex, slice, sort, (<>))
+import Data.Array (filter, fromFoldable, head, index, last, length, mapWithIndex, slice, sort)
 import Data.Foldable (sum)
+import Data.FoldableWithIndex (foldlWithIndex)
 import Data.Int (toNumber)
 import Data.Maybe (Maybe(..), fromMaybe)
-import Data.Newtype (unwrap)
+import Data.Ord (abs)
+import Data.Set as Set
 import Data.Tuple (Tuple(..), snd, fst)
 
 newtype IndexedTuple = IndexedTuple (Tuple Int Number)
@@ -88,8 +90,10 @@ checkPair (IndexedTuple ta) (Just (IndexedTuple tb) ) windowSize =
         reWrapped = [IndexedTuple ta, IndexedTuple tb]
         violatesWindow = ((fst tb) - (fst ta)) <= windowSize
 
-clampToWindow :: Array IndexedTuple -> Array IndexedTuple
-clampToWindow = foldl (\ arr ta ->  )
+clampToWindow :: Array IndexedTuple -> Int -> Array IndexedTuple
+clampToWindow xs windowSize = foldlWithIndex reducer [] xs
+    where 
+        reducer = (\ ix arr (IndexedTuple t) -> arr <> checkPair (IndexedTuple t) (index xs $ ix + 1) windowSize)
 
 peakFunction :: Int -> Number -> Int -> Number -> Array Number -> Number
 peakFunction windowSize h i xi xs = (backMax + forwardMax) / 2.0
@@ -110,8 +114,9 @@ pairWithIndex xs = mapWithIndex (\ i xi -> IndexedTuple (Tuple i xi)) xs
 unPair :: Array IndexedTuple -> Array Number
 unPair xs = map (\ (IndexedTuple xi) -> snd xi) xs
 
-findPeaks :: Array Number -> Int -> Number -> Array Number
-findPeaks xs windowSize h = []
+findPeaks :: Array Number -> Int -> Number -> Array Int
+findPeaks xs windowSize h = 
+    fromFoldable $ Set.map (\ (IndexedTuple t) -> fst t) $ Set.fromFoldable clampedPeaks 
     where
         peakFnValues = mapWithIndex (\ ix val -> peakFunction windowSize h ix val xs ) xs
         pairedFnValues = pairWithIndex peakFnValues
@@ -119,3 +124,25 @@ findPeaks xs windowSize h = []
         meanPeakFnValues = seriesMean $ unPair positivePeakFnValues
         stdDevPeakFnValues = stdDev (unPair positivePeakFnValues) meanPeakFnValues
         largePeaks = removeSmallPeaks positivePeakFnValues h meanPeakFnValues stdDevPeakFnValues
+        clampedPeaks = clampToWindow largePeaks windowSize
+
+chunkConsec :: forall a. Array a -> Array (Array a)
+chunkConsec xs = foldlWithIndex (\ i acc xi -> acc <> (safePair i xi)) [] xs
+    where
+        safePair :: Int -> a -> Array (Array a)
+        safePair ix val = 
+            case index xs (ix + 1) of
+                (Just v) -> [[val, v]]
+                Nothing -> []
+
+diffChunks :: Array (Array Number) -> Array Number
+diffChunks xs = map (\ arr -> abs $ (safeHead arr) - (safeTail arr)) xs
+    where
+        safeHead a = fromMaybe 0.0 $ head a
+        safeTail a = fromMaybe 0.0 $ last a
+
+averageDistance :: Array Number -> Number
+averageDistance xs = seriesMean diffs
+    where
+        chunked = chunkConsec xs
+        diffs = diffChunks chunked

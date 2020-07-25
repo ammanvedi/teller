@@ -75,14 +75,14 @@ autoCorrelation xs =
 
 -- Peak Detection
 
-max :: forall a. Ord a => Array a -> Maybe a
-max xs = last $ sort xs
+max' :: forall a. Ord a => Array a -> Maybe a
+max' xs = last $ sort xs
 
 checkPair :: IndexedTuple -> Maybe IndexedTuple -> Int -> Array IndexedTuple
 checkPair ta Nothing _ = [ta]
 checkPair (IndexedTuple ta) (Just (IndexedTuple tb) ) windowSize =
     if violatesWindow
-        then case max reWrapped of
+        then case max' reWrapped of
             Nothing -> []
             Just t -> [t]
         else reWrapped
@@ -102,8 +102,8 @@ peakFunction windowSize h i xi xs = (backMax + forwardMax) / 2.0
         forwardValues = slice (i + 1) (i + windowSize + 1) xs
         backMinusXi = map (\ b -> xi - b) backwardValues
         forwardMinusXi = map (\ b -> xi - b) forwardValues
-        backMax = fromMaybe 0.0 $ max backMinusXi
-        forwardMax = fromMaybe 0.0 $ max forwardMinusXi
+        backMax = fromMaybe 0.0 $ max' backMinusXi
+        forwardMax = fromMaybe 0.0 $ max' forwardMinusXi
 
 removeSmallPeaks :: Array IndexedTuple -> Number -> Number -> Number -> Array IndexedTuple
 removeSmallPeaks xs h m sd = filter (\ (IndexedTuple xi) -> (snd xi - m) > (h * sd)) xs

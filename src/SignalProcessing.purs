@@ -2,10 +2,23 @@ module SignalProcessing where
 
 import Prelude
 
-import Data.Array (filter, index, last, length, mapWithIndex, slice, sort)
+import Data.Array (filter, index, last, length, mapWithIndex, slice, sort, (<>))
 import Data.Foldable (sum)
 import Data.Int (toNumber)
-import Data.Maybe (Maybe(..))
+import Data.Maybe (Maybe(..), fromMaybe)
+import Data.Newtype (unwrap)
+import Data.Tuple (Tuple(..), snd, fst)
+
+newtype IndexedTuple = IndexedTuple (Tuple Int Number)
+
+instance indexedTupleEq :: Eq IndexedTuple where
+    eq (IndexedTuple ta) (IndexedTuple tb) = (snd ta) == (snd tb)
+
+instance indexedTupleOrd :: Ord IndexedTuple where
+    compare (IndexedTuple ta) (IndexedTuple tb) 
+        | (snd ta) > (snd tb) = GT
+        | (snd ta) < (snd tb) = LT
+        | otherwise = EQ
 
 -- Correlation
 
@@ -60,29 +73,49 @@ autoCorrelation xs =
 
 -- Peak Detection
 
-max :: Array Number -> Number
-max xs =
-    case lastItem of
-        (Just i) -> i
-        Nothing -> 0.0
-    where
-        sorted = sort xs
-        lastItem = last sorted
+max :: forall a. Ord a => Array a -> Maybe a
+max xs = last $ sort xs
 
-peakFunction :: Int -> Int -> Number -> Array Number -> Number
-peakFunction windowSize i xi xs = (backMax + forwardMax) / 2.0
+checkPair :: IndexedTuple -> Maybe IndexedTuple -> Int -> Array IndexedTuple
+checkPair ta Nothing _ = [ta]
+checkPair (IndexedTuple ta) (Just (IndexedTuple tb) ) windowSize =
+    if violatesWindow
+        then case max reWrapped of
+            Nothing -> []
+            Just t -> [t]
+        else reWrapped
+    where
+        reWrapped = [IndexedTuple ta, IndexedTuple tb]
+        violatesWindow = ((fst tb) - (fst ta)) <= windowSize
+
+clampToWindow :: Array IndexedTuple -> Array IndexedTuple
+clampToWindow = foldl (\ arr ta ->  )
+
+peakFunction :: Int -> Number -> Int -> Number -> Array Number -> Number
+peakFunction windowSize h i xi xs = (backMax + forwardMax) / 2.0
     where
         backwardValues = slice (i - windowSize) i xs
         forwardValues = slice (i + 1) (i + windowSize + 1) xs
         backMinusXi = map (\ b -> xi - b) backwardValues
         forwardMinusXi = map (\ b -> xi - b) forwardValues
-        backMax = max backMinusXi
-        forwardMax = max forwardMinusXi
+        backMax = fromMaybe 0.0 $ max backMinusXi
+        forwardMax = fromMaybe 0.0 $ max forwardMinusXi
 
-findPeaks :: Array Number -> Int -> Array Number
-findPeaks xs windowSize = []
+removeSmallPeaks :: Array IndexedTuple -> Number -> Number -> Number -> Array IndexedTuple
+removeSmallPeaks xs h m sd = filter (\ (IndexedTuple xi) -> (snd xi - m) > (h * sd)) xs
+
+pairWithIndex :: Array Number -> Array IndexedTuple
+pairWithIndex xs = mapWithIndex (\ i xi -> IndexedTuple (Tuple i xi)) xs
+
+unPair :: Array IndexedTuple -> Array Number
+unPair xs = map (\ (IndexedTuple xi) -> snd xi) xs
+
+findPeaks :: Array Number -> Int -> Number -> Array Number
+findPeaks xs windowSize h = []
     where
-        peakFnValues = mapWithIndex (\ ix val -> peakFunction windowSize ix val xs ) xs
-        positivePeakFnValues = filter (\ xi -> xi >= 0.0) peakFnValues
-        meanPeakFnValues = seriesMean positivePeakFnValues
-        stdDevPeakFnValues = stdDev positivePeakFnValues meanPeakFnValues
+        peakFnValues = mapWithIndex (\ ix val -> peakFunction windowSize h ix val xs ) xs
+        pairedFnValues = pairWithIndex peakFnValues
+        positivePeakFnValues = filter (\ (IndexedTuple xi) -> snd xi > 0.0) pairedFnValues
+        meanPeakFnValues = seriesMean $ unPair positivePeakFnValues
+        stdDevPeakFnValues = stdDev (unPair positivePeakFnValues) meanPeakFnValues
+        largePeaks = removeSmallPeaks positivePeakFnValues h meanPeakFnValues stdDevPeakFnValues

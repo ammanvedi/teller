@@ -72,7 +72,6 @@ autoCorrelation :: Array Number -> Array Number
 autoCorrelation xs = 
     mapWithIndex (\ i _ -> autoCorrelationAtLagK i xs) xs
 
-
 -- Peak Detection
 
 max' :: forall a. Ord a => Array a -> Maybe a

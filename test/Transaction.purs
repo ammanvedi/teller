@@ -2,12 +2,12 @@ module Test.Transaction where
 
 import Data.Array as Array
 import Data.Date (Month(..))
-import Data.Maybe (fromMaybe)
+import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Set as Set
 import Prelude (Unit, discard)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
-import Transaction (TransactionRec(..), matchMerchant, transactionsForMerchant, uniqueMerchants, getTransactionMonth, transactionsOccurrInSuccessiveMonths)
+import Transaction (TransactionRec(..), matchMerchant, transactionsForMerchant, uniqueMerchants, getTransactionMonth, transactionsOccurrInSuccessiveMonths, getHeartbeatChunk)
 
 testTransaction :: TransactionRec
 testTransaction = TransactionRec ({
@@ -47,6 +47,38 @@ testTransactions = [
             timestamp: 1587501957000.0,
             amount: 10.0,
             merchantName: "Netflix",
+            reference: "BAR XY"
+        })
+]
+
+testRangeTransactions :: Array TransactionRec
+testRangeTransactions = [
+    TransactionRec ({
+            timestamp: 1595721600000.0, -- 26 jul
+            amount: 10.0,
+            merchantName: "TFL",
+            reference: "TFL X"
+        }),
+    TransactionRec ({
+            timestamp: 1596585600000.0, -- 5 aug
+            amount: 10.0,
+            merchantName: "TFL",
+            reference: "BAR XY"
+        })
+]
+
+testRangeConsecTransactions :: Array TransactionRec
+testRangeConsecTransactions = [
+    TransactionRec ({
+            timestamp: 1595721600000.0, -- 26 jul
+            amount: 10.0,
+            merchantName: "TFL",
+            reference: "TFL X"
+        }),
+    TransactionRec ({
+            timestamp: 1595808000000.0, -- 27 jul
+            amount: 10.0,
+            merchantName: "TFL",
             reference: "BAR XY"
         })
 ]
@@ -92,4 +124,14 @@ transactionSpec =
         it "returns false for a empty array" do
             let res = transactionsOccurrInSuccessiveMonths []
             res `shouldEqual` false
-    
+    describe "getHeartbeatChunk" do
+        it "returns correct chunk for two dates" do
+            let res = getHeartbeatChunk testRangeTransactions
+            case res of
+                (Just chunk) -> chunk `shouldEqual` [1,0,0,0,0,0,0,0,0,0]
+                Nothing -> false `shouldEqual` true
+        it "returns correct chunk for two dates on consecutive days" do
+            let res = getHeartbeatChunk testRangeConsecTransactions
+            case res of
+                (Just chunk) -> chunk `shouldEqual` [1]
+                Nothing -> false `shouldEqual` true

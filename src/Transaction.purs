@@ -1,17 +1,20 @@
 module Transaction where
 
-import Data.Maybe (Maybe(..), fromMaybe)
 import Prelude
 
-import Data.Array (filter, foldl, head, sort, tail)
+import Data.Array (filter, foldl, head, last, sort, tail, range)
+import Data.Date (Date, diff)
 import Data.Date.Component (Month)
 import Data.DateTime (month, date)
 import Data.DateTime.Instant (instant, toDateTime)
-import Data.Enum (succ)
-import Data.Int (toNumber)
+import Data.Enum (defaultFromEnum, succ)
+import Data.Int (floor, toNumber)
+import Data.Maybe (Maybe(..), fromMaybe)
+import Data.Newtype (unwrap)
 import Data.Number.Format (precision, toStringWith)
 import Data.Set as Set
-import Data.Time.Duration (Milliseconds(..))
+import Data.Time.Duration (Milliseconds(..), Days)
+import SignalProcessing (chunkConsec)
 
 class Directional a where
     outgoing :: a -> Boolean
@@ -99,3 +102,33 @@ sortTransactionsByDateDesc xs = sort xs
 
 getOutgoingTransactions :: forall a. Directional a => Array a -> Array a
 getOutgoingTransactions xs = filter outgoing xs
+
+transactionDate :: TransactionRec -> Maybe Date
+transactionDate (TransactionRec t) = 
+    case tInstant of
+        (Just i) -> Just $ date $ toDateTime i
+        Nothing -> Nothing
+    where
+        msDuration = Milliseconds $ t.timestamp
+        tInstant = instant msDuration
+
+getHeartbeatChunk :: Array TransactionRec -> Maybe (Array Int)
+getHeartbeatChunk xs = do 
+    ts <- head xs
+    te <- last xs
+    startDate <- transactionDate ts
+    endDate <- transactionDate te
+    differenceDays :: Days <- pure $ diff endDate startDate
+    dayCount <- pure $ floor $ unwrap differenceDays
+    if dayCount >= 2
+        then do
+            dayRange <- pure $ range 1 (dayCount - 1)
+            gapZeroes <- pure $ map (\ _ -> 0) dayRange
+            pure $ [1] <> gapZeroes
+        else pure [1]
+
+-- TODO
+getBinaryHeartbeat :: Array TransactionRec -> Array Int 
+getBinaryHeartbeat xs = []
+    where
+        chunked = chunkConsec xs

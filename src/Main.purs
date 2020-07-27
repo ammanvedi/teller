@@ -1,17 +1,7 @@
-module Main where
+module Main where 
 
-import Prelude
+import Transaction as T
 
-import DateHelpers (getStartOfMonth, getXDaysPrior, maybeDateToString)
-import Effect (Effect)
-import Effect.Console (log)
-import Effect.Now (nowDate)
+getBinaryHeartbeat = T.getBinaryHeartbeat
 
-main :: Effect Unit
-main = do
-  now <- nowDate
-  analysisEndDate <- pure $ getStartOfMonth now
-  analysisStartDate <- pure $ getXDaysPrior analysisEndDate $ -95
-  log $ maybeDateToString analysisEndDate
-  log $ maybeDateToString analysisStartDate
-    
+transactionsOccurrInSuccessiveMonths = T.transactionsOccurrInSuccessiveMonths

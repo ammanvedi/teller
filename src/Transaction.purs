@@ -15,12 +15,14 @@ import Data.Number.Format (precision, toStringWith)
 import Data.Set as Set
 import Data.Time.Duration (Milliseconds(..), Days)
 import SignalProcessing (chunkConsec)
+import Data.Foldable (foldl)
 
 class Directional a where
     outgoing :: a -> Boolean
 
 newtype TransactionRec =
     TransactionRec {
+        accountId :: String,
         timestamp :: Number,
         amount :: Number,
         merchantName :: String,
@@ -127,8 +129,14 @@ getHeartbeatChunk xs = do
             pure $ [1] <> gapZeroes
         else pure [1]
 
--- TODO
 getBinaryHeartbeat :: Array TransactionRec -> Array Int 
-getBinaryHeartbeat xs = []
+getBinaryHeartbeat [] = []
+getBinaryHeartbeat [_] = [1]
+getBinaryHeartbeat xs = heartbeatsToLast <> [1]
     where
         chunked = chunkConsec xs
+        makeChunk :: Array Int -> Array TransactionRec -> Array Int
+        makeChunk acc chunk = acc <> chunkRes
+            where
+                chunkRes = fromMaybe [] $ getHeartbeatChunk chunk
+        heartbeatsToLast = foldl (\ a t -> makeChunk a t) [] chunked

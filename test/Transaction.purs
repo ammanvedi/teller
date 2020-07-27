@@ -7,10 +7,11 @@ import Data.Set as Set
 import Prelude (Unit, discard)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
-import Transaction (TransactionRec(..), matchMerchant, transactionsForMerchant, uniqueMerchants, getTransactionMonth, transactionsOccurrInSuccessiveMonths, getHeartbeatChunk)
+import Transaction (TransactionRec(..), getBinaryHeartbeat, matchMerchant, transactionsForMerchant, uniqueMerchants, getTransactionMonth, transactionsOccurrInSuccessiveMonths, getHeartbeatChunk)
 
 testTransaction :: TransactionRec
 testTransaction = TransactionRec ({
+            accountId: "acc",
             timestamp: 1595361449000.0,
             amount: 10.0,
             merchantName: "Barclays",
@@ -19,6 +20,7 @@ testTransaction = TransactionRec ({
 
 testTransactionBarclaysA :: TransactionRec
 testTransactionBarclaysA = TransactionRec ({
+            accountId: "acc",
             timestamp: 1582317957000.0,
             amount: 10.0,
             merchantName: "Barclays",
@@ -27,6 +29,7 @@ testTransactionBarclaysA = TransactionRec ({
 
 testTransactionBarclaysB :: TransactionRec
 testTransactionBarclaysB = TransactionRec ({
+            accountId: "acc",
             timestamp: 1584823557000.0,
             amount: 100.0,
             merchantName: "Barclays",
@@ -36,6 +39,7 @@ testTransactionBarclaysB = TransactionRec ({
 testTransactions :: Array TransactionRec
 testTransactions = [
     TransactionRec ({
+            accountId: "acc",
             timestamp: 1579639557000.0,
             amount: 10.0,
             merchantName: "TFL",
@@ -44,6 +48,7 @@ testTransactions = [
     testTransactionBarclaysA,
     testTransactionBarclaysB,
     TransactionRec ({
+            accountId: "acc",
             timestamp: 1587501957000.0,
             amount: 10.0,
             merchantName: "Netflix",
@@ -54,12 +59,14 @@ testTransactions = [
 testRangeTransactions :: Array TransactionRec
 testRangeTransactions = [
     TransactionRec ({
+            accountId: "acc",
             timestamp: 1595721600000.0, -- 26 jul
             amount: 10.0,
             merchantName: "TFL",
             reference: "TFL X"
         }),
     TransactionRec ({
+            accountId: "acc",
             timestamp: 1596585600000.0, -- 5 aug
             amount: 10.0,
             merchantName: "TFL",
@@ -70,13 +77,47 @@ testRangeTransactions = [
 testRangeConsecTransactions :: Array TransactionRec
 testRangeConsecTransactions = [
     TransactionRec ({
+            accountId: "acc",
             timestamp: 1595721600000.0, -- 26 jul
             amount: 10.0,
             merchantName: "TFL",
             reference: "TFL X"
         }),
     TransactionRec ({
+            accountId: "acc",
             timestamp: 1595808000000.0, -- 27 jul
+            amount: 10.0,
+            merchantName: "TFL",
+            reference: "BAR XY"
+        })
+]
+
+hbTransactions :: Array TransactionRec
+hbTransactions = [
+    TransactionRec ({
+            accountId: "acc",
+            timestamp: 1595721600000.0, -- 26 jul
+            amount: 10.0,
+            merchantName: "TFL",
+            reference: "TFL X"
+        }),
+    TransactionRec ({
+            accountId: "acc",
+            timestamp: 1595808000000.0, -- 27 jul
+            amount: 10.0,
+            merchantName: "TFL",
+            reference: "BAR XY"
+        }),
+    TransactionRec ({
+            accountId: "acc",
+            timestamp: 1596758400000.0, -- 7 aug
+            amount: 10.0,
+            merchantName: "TFL",
+            reference: "BAR XY"
+        }),
+    TransactionRec ({
+            accountId: "acc",
+            timestamp: 1596931200000.0, -- 9 aug
             amount: 10.0,
             merchantName: "TFL",
             reference: "BAR XY"
@@ -135,3 +176,7 @@ transactionSpec =
             case res of
                 (Just chunk) -> chunk `shouldEqual` [1]
                 Nothing -> false `shouldEqual` true
+    describe "getBinaryHeartbeat" do
+        it "calculates the correct heartbeat for a series of transactions" do
+            let res = getBinaryHeartbeat hbTransactions
+            res `shouldEqual` [1,1,0,0,0,0,0,0,0,0,0,0,1,0,1]

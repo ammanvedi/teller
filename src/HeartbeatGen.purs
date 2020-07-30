@@ -1,15 +1,15 @@
 module HeartbeatGen where
 
 import Data.Array ((..))
-import Data.Date (Date, Weekday(..), adjust, diff, weekday)
+import Data.Date (Date, Day, adjust, day, diff, lastDayOfMonth, month, weekday, year)
 import Data.Date.Component (Weekday(..))
-import Data.Date.Component.Gen (genWeekday)
+import Data.Enum (fromEnum, toEnum)
 import Data.Foldable (foldl)
 import Data.Int (floor, toNumber)
-import Data.Maybe (Maybe(..))
+import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Newtype (unwrap)
 import Data.Time.Duration (Days(..))
-import Prelude (($), (<>))
+import Prelude (($), (<>), (==), (-), (<), (&&), bottom)
 
 type HeartbeatGeneratorFn = Date -> Int
 
@@ -26,7 +26,7 @@ generateHeartbeat dStart dEnd genFunc =
     foldl (\ acc dateIndex -> acc <> [(genFunc (safeAdjust (Days $ toNumber dateIndex) dStart))] ) [] dateIndexes
     where
         dateDelta :: Days
-        dateDelta = diff dStart dEnd
+        dateDelta = diff dEnd dStart
         deltaInt = floor $ unwrap dateDelta
         dateIndexes = 0..deltaInt
 
@@ -46,3 +46,41 @@ genWeekday dt =
         Sunday -> 0
     where
         wkd = weekday dt
+
+genWeekend :: HeartbeatGeneratorFn
+genWeekend dt =
+    case wkd of
+        Monday -> 0
+        Tuesday -> 0
+        Wednesday -> 0
+        Thursday -> 0
+        Friday -> 0
+        Saturday -> 1
+        Sunday -> 1
+    where
+        wkd = weekday dt
+
+genLastWeekDay :: Weekday -> HeartbeatGeneratorFn
+genLastWeekDay w dt = 
+    if isSameDay && (daysUntilEndOfMonth < 7)
+        then 1
+        else 0
+    where
+        isSameDay = weekday dt == w
+        dayOfMonth = fromEnum $ day dt
+        lastDateOfMonth = fromEnum $ lastDayOfMonth (year dt) (month dt)
+        daysUntilEndOfMonth = lastDateOfMonth - dayOfMonth
+
+genLastFridayOfMonth :: HeartbeatGeneratorFn
+genLastFridayOfMonth = genLastWeekDay Friday
+
+genXthDayOfMonth :: Int -> HeartbeatGeneratorFn
+genXthDayOfMonth x dt =
+    if xAsDay == dateDay then 1 else 0
+    where
+        xAsDay :: Day
+        xAsDay = fromMaybe bottom (toEnum x)
+        dateDay = day dt
+
+firstOfMonth :: HeartbeatGeneratorFn
+firstOfMonth = genXthDayOfMonth 1

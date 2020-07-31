@@ -1,17 +1,19 @@
 module HeartbeatGen where
 
-import Data.Array ((..))
-import Data.Date (Date, Day, adjust, day, diff, lastDayOfMonth, month, weekday, year)
+import Data.Array (index, (..))
+import Data.Date (Date, Day, Weekday(..), adjust, day, diff, lastDayOfMonth, month, weekday, year)
 import Data.Date.Component (Weekday(..))
 import Data.Enum (fromEnum, toEnum)
 import Data.Foldable (foldl)
+import Data.Functor (map)
 import Data.Int (floor, toNumber)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Newtype (unwrap)
 import Data.Time.Duration (Days(..))
+import Data.Tuple (Tuple(..))
+import GenTypes (HeartbeatGeneratorFn)
 import Prelude (($), (<>), (==), (-), (<), (&&), bottom)
-
-type HeartbeatGeneratorFn = Date -> Int
+import Trend (HeartbeatMatcher(..), TrendDescription(..))
 
 safeAdjust :: Days -> Date -> Date
 safeAdjust d dt =
@@ -60,6 +62,14 @@ genWeekend dt =
     where
         wkd = weekday dt
 
+genSpecificWeekday :: Weekday -> HeartbeatGeneratorFn
+genSpecificWeekday w dt =
+    if wkd == w
+        then 1
+        else 0
+    where
+        wkd = weekday dt
+
 genLastWeekDay :: Weekday -> HeartbeatGeneratorFn
 genLastWeekDay w dt = 
     if isSameDay && (daysUntilEndOfMonth < 7)
@@ -71,9 +81,6 @@ genLastWeekDay w dt =
         lastDateOfMonth = fromEnum $ lastDayOfMonth (year dt) (month dt)
         daysUntilEndOfMonth = lastDateOfMonth - dayOfMonth
 
-genLastFridayOfMonth :: HeartbeatGeneratorFn
-genLastFridayOfMonth = genLastWeekDay Friday
-
 genXthDayOfMonth :: Int -> HeartbeatGeneratorFn
 genXthDayOfMonth x dt =
     if xAsDay == dateDay then 1 else 0
@@ -82,5 +89,48 @@ genXthDayOfMonth x dt =
         xAsDay = fromMaybe bottom (toEnum x)
         dateDay = day dt
 
-firstOfMonth :: HeartbeatGeneratorFn
-firstOfMonth = genXthDayOfMonth 1
+-- Xth Day of month
+
+createMonthlyMatchers :: Array HeartbeatMatcher
+createMonthlyMatchers =
+    map (\ i -> 
+        HeartbeatMatcher (
+            Tuple (genXthDayOfMonth i) 
+            (MonthDayTrendDescription { dayOfMonth: i })
+        ) ) (1..31)
+
+-- Specific Weekdays
+
+genEveryMonday :: HeartbeatGeneratorFn
+genEveryMonday = genSpecificWeekday Monday
+
+genEveryTuesday :: HeartbeatGeneratorFn
+genEveryTuesday = genSpecificWeekday Tuesday
+
+genEveryWednesday :: HeartbeatGeneratorFn
+genEveryWednesday = genSpecificWeekday Wednesday
+
+genEveryThursday :: HeartbeatGeneratorFn
+genEveryThursday = genSpecificWeekday Thursday
+
+genEveryFriday :: HeartbeatGeneratorFn
+genEveryFriday = genSpecificWeekday Friday
+
+genEverySaturday :: HeartbeatGeneratorFn
+genEverySaturday = genSpecificWeekday Saturday
+
+genEverySunday :: HeartbeatGeneratorFn
+genEverySunday = genSpecificWeekday Sunday
+
+-- Last weekday of month
+
+genLastFridayOfMonth :: HeartbeatGeneratorFn
+genLastFridayOfMonth = genLastWeekDay Friday
+
+-- Weekdays
+
+-- Weekends
+
+-- TODO - create functions for each trend that return 
+-- HeartbeatMatchers assemble into one large array
+-- use this to match against trends

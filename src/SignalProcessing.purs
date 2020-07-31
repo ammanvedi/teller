@@ -2,8 +2,8 @@ module SignalProcessing where
 
 import Prelude
 
-import Data.Array (filter, fromFoldable, head, index, last, length, mapWithIndex, slice, sort)
-import Data.Foldable (sum)
+import Data.Array (filter, fromFoldable, head, index, last, length, mapWithIndex, slice, sort, zip)
+import Data.Foldable (foldl, sum)
 import Data.FoldableWithIndex (foldlWithIndex)
 import Data.Int (toNumber)
 import Data.Maybe (Maybe(..), fromMaybe)
@@ -145,3 +145,25 @@ averageDistance xs = seriesMean diffs
     where
         chunked = chunkConsec xs
         diffs = diffChunks chunked
+
+getMatchingValues :: Array Int -> Array Int -> Int
+getMatchingValues [] [] = 0
+getMatchingValues _ [] = 0
+getMatchingValues [] _ = 0
+getMatchingValues x1 x2 = 
+    foldl (\ acc (Tuple a b) -> 
+        if a == b 
+            then (acc + 1) 
+            else acc
+            ) 0 zipped
+    where
+        zipped = zip x1 x2
+
+naiveSignalMatch :: Array Int -> Array Int -> Number
+naiveSignalMatch [] [] = 100.0
+naiveSignalMatch _ [] = 0.0
+naiveSignalMatch [] _ = 0.0
+naiveSignalMatch x1 x2 = (valsThatMatch / listLeng) * 100.0
+    where 
+        valsThatMatch = toNumber $ getMatchingValues x1 x2
+        listLeng = toNumber $ length x1

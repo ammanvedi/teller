@@ -1,4 +1,22 @@
 module Trend where
 
--- take a set of transactions and identify if there is a pattern there montly or otherwise
+import Data.Date (Weekday)
+import Data.Tuple (Tuple)
+import GenTypes (HeartbeatGeneratorFn)
+import Transaction (TransactionRec(..))
+
+data TrendDescription 
+    = MonthDayTrendDescription {dayOfMonth :: Int}
+    | LastWeekdayTrendDescription {weekday :: Weekday}
+    | SpecificWeekdayTrendDescription {weekday :: Weekday}
+    | EveryWeekdayTrendDescription
+    | EveryDayTrendDescription
+    | WeekendTrendDescription
+
+newtype HeartbeatMatcher = 
+    HeartbeatMatcher (Tuple HeartbeatGeneratorFn TrendDescription)
+
+
+
+-- identifyTrend :: Array TransactionRec -> 
 

@@ -11,9 +11,8 @@ import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Newtype (unwrap)
 import Data.Time.Duration (Days(..))
 import Data.Tuple (Tuple(..))
-import GenTypes (HeartbeatGeneratorFn)
+import GenTypes (HeartbeatGeneratorFn, HeartbeatMatcher(..), TrendDescription(..))
 import Prelude (($), (<>), (==), (-), (<), (&&), bottom)
-import Trend (HeartbeatMatcher(..), TrendDescription(..))
 
 safeAdjust :: Days -> Date -> Date
 safeAdjust d dt =
@@ -101,35 +100,72 @@ createMonthlyMatchers =
 
 -- Specific Weekdays
 
-genEveryMonday :: HeartbeatGeneratorFn
-genEveryMonday = genSpecificWeekday Monday
+genEveryMondayMatcher :: HeartbeatMatcher
+genEveryMondayMatcher = HeartbeatMatcher (
+            Tuple (genSpecificWeekday Monday) 
+(SpecificWeekdayTrendDescription { weekday: Monday }))
 
-genEveryTuesday :: HeartbeatGeneratorFn
-genEveryTuesday = genSpecificWeekday Tuesday
+genEveryTuesdayMatcher :: HeartbeatMatcher
+genEveryTuesdayMatcher = HeartbeatMatcher (
+            Tuple (genSpecificWeekday Tuesday) 
+(SpecificWeekdayTrendDescription { weekday: Tuesday }))
 
-genEveryWednesday :: HeartbeatGeneratorFn
-genEveryWednesday = genSpecificWeekday Wednesday
+genEveryWednesdayMatcher :: HeartbeatMatcher
+genEveryWednesdayMatcher = HeartbeatMatcher (
+            Tuple (genSpecificWeekday Wednesday) 
+(SpecificWeekdayTrendDescription { weekday: Wednesday }))
 
-genEveryThursday :: HeartbeatGeneratorFn
-genEveryThursday = genSpecificWeekday Thursday
+genEveryThursdayMatcher :: HeartbeatMatcher
+genEveryThursdayMatcher = HeartbeatMatcher (
+            Tuple (genSpecificWeekday Thursday) 
+(SpecificWeekdayTrendDescription { weekday: Thursday }))
 
-genEveryFriday :: HeartbeatGeneratorFn
-genEveryFriday = genSpecificWeekday Friday
+genEveryFridayMatcher :: HeartbeatMatcher
+genEveryFridayMatcher = HeartbeatMatcher (
+            Tuple (genSpecificWeekday Friday) 
+(SpecificWeekdayTrendDescription { weekday: Friday }))
 
-genEverySaturday :: HeartbeatGeneratorFn
-genEverySaturday = genSpecificWeekday Saturday
+genEverySaturdayMatcher :: HeartbeatMatcher
+genEverySaturdayMatcher = HeartbeatMatcher (
+            Tuple (genSpecificWeekday Saturday) 
+(SpecificWeekdayTrendDescription { weekday: Saturday }))
 
-genEverySunday :: HeartbeatGeneratorFn
-genEverySunday = genSpecificWeekday Sunday
+genEverySundayMatcher :: HeartbeatMatcher
+genEverySundayMatcher = HeartbeatMatcher (
+            Tuple (genSpecificWeekday Sunday) 
+(SpecificWeekdayTrendDescription { weekday: Sunday }))
 
 -- Last weekday of month
 
-genLastFridayOfMonth :: HeartbeatGeneratorFn
-genLastFridayOfMonth = genLastWeekDay Friday
+genLastFridayOfMonthMatcher :: HeartbeatMatcher
+genLastFridayOfMonthMatcher = HeartbeatMatcher (
+            Tuple (genLastWeekDay Friday) 
+(LastWeekdayTrendDescription { weekday: Friday }))
 
 -- Weekdays
 
+genWeekdaysMatcher :: HeartbeatMatcher
+genWeekdaysMatcher = HeartbeatMatcher (Tuple genWeekday EveryWeekdayTrendDescription)
+
 -- Weekends
+
+genWeekendMatcher :: HeartbeatMatcher
+genWeekendMatcher = HeartbeatMatcher (Tuple genWeekend WeekendTrendDescription)
+
+allHeartbeatMatchers :: Array HeartbeatMatcher
+allHeartbeatMatchers = 
+    createMonthlyMatchers <> [
+        genEveryMondayMatcher,
+        genEveryTuesdayMatcher,
+        genEveryWednesdayMatcher,
+        genEveryThursdayMatcher,
+        genEveryFridayMatcher,
+        genEverySaturdayMatcher,
+        genEverySundayMatcher,
+        genLastFridayOfMonthMatcher,
+        genWeekdaysMatcher,
+        genWeekendMatcher
+    ]
 
 -- TODO - create functions for each trend that return 
 -- HeartbeatMatchers assemble into one large array

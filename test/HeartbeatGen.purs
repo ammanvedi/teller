@@ -1,9 +1,9 @@
 module Test.HeartbeatGen where
 
-import Data.Date (Date, canonicalDate)
+import Data.Date (Date, Weekday(..), canonicalDate)
 import Data.Enum (toEnum)
 import Data.Maybe (fromMaybe)
-import HeartbeatGen (firstOfMonth, genEveryDay, genLastFridayOfMonth, genWeekday, genWeekend, generateHeartbeat)
+import HeartbeatGen (genEveryDay, genLastWeekDay, genWeekday, genWeekend, genXthDayOfMonth, generateHeartbeat)
 import Prelude (Unit, bottom, discard)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
@@ -49,7 +49,7 @@ heartbeatGenSpec =
                 res `shouldEqual` [1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0]
         describe "Last Weekday" do
             it "Returns the correct heartbeat for last Friday of the month" do
-                let res = generateHeartbeat testStartLastX testEndLastX genLastFridayOfMonth
+                let res = generateHeartbeat testStartLastX testEndLastX (genLastWeekDay Friday)
                 res `shouldEqual` [
                     0, 0, 1, 0, 0,
                     0, 0, 0, 0, 0, 0, 0,
@@ -59,7 +59,7 @@ heartbeatGenSpec =
                     0, 0, 0, 0, 1, 0 ]
         describe "Xth Day Of Month" do
             it "Returns the correct heartbeat for first day of the month" do
-                let res = generateHeartbeat testStartLastX testEndLastX firstOfMonth
+                let res = generateHeartbeat testStartLastX testEndLastX (genXthDayOfMonth 1)
                 res `shouldEqual` [
                     0, 0, 0, 0, 0,
                     0, 0, 1, 0, 0, 0, 0,

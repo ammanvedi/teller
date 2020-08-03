@@ -5,23 +5,25 @@ import Data.Date (Date)
 import Data.Functor (map)
 import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple(..))
-import GenTypes (HeartbeatMatcher(..), TrendDescription)
+import GenTypes (HeartbeatMatcher(..), HeartbeatMatchResult(..))
 import HeartbeatGen (allHeartbeatMatchers, generateHeartbeat)
-import Prelude (bind, pure)
+import Prelude (bind, pure, ($))
 import SignalProcessing (naiveSignalMatch)
 import Transaction (TransactionRec, getBinaryHeartbeat, transactionDate)
 
 -- Holy grail function
 -- identifyTrend :: Array TransactionRec -> Maybe TrendDescription
 
-matchAgainstHeartbeat :: Date -> Date -> Array Int -> HeartbeatMatcher -> Tuple Number TrendDescription
+
+
+matchAgainstHeartbeat :: Date -> Date -> Array Int -> HeartbeatMatcher -> HeartbeatMatchResult
 matchAgainstHeartbeat dStart dEnd hb (HeartbeatMatcher (Tuple genFunc desc)) =
-    Tuple signalMatch desc
+    HeartbeatMatchResult $ Tuple signalMatch desc
     where
         generatedHb = generateHeartbeat dStart dEnd genFunc
         signalMatch = naiveSignalMatch generatedHb hb
 
-getMatcherResults :: Array TransactionRec -> Array (Tuple Number TrendDescription)
+getMatcherResults :: Array TransactionRec -> Array HeartbeatMatchResult
 getMatcherResults [] = []
 getMatcherResults [_] = []
 getMatcherResults xs =
@@ -40,3 +42,6 @@ getMatcherResults xs =
             pure (Tuple startDate endDate)
 
 
+-- TODO: More test cases for getMatcherResults
+-- calculate the price that is being paid for a trend
+-- create pipeline, split by merchant -> identify if trend is random process through autocorrelation-> find best match trend for each 

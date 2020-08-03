@@ -1,5 +1,9 @@
 module Test.Trend where
 
+import Data.Array (head)
+import Data.Maybe (Maybe(..))
+import Data.Tuple (Tuple(..))
+import GenTypes (HeartbeatMatchResult(..), TrendDescription(..))
 import Prelude (Unit, discard, negate)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
@@ -36,6 +40,14 @@ trendSpec :: Spec Unit
 trendSpec =
     describe "Trend" do 
         describe "getMatcherResults" do
-            it "calculates correct results" do
+            it "calculates correct results for a trend that occurs on the first of the month" do
                 let res = getMatcherResults testTransactions
-                res `shouldEqual` []
+                case head res of
+                    (Just h) -> 
+                        h `shouldEqual` (
+                            HeartbeatMatchResult 
+                                (Tuple 100.0 
+                                    (MonthDayTrendDescription {dayOfMonth: 1} )
+                                )
+                            )
+                    Nothing -> false `shouldEqual` true

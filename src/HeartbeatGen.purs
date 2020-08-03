@@ -166,7 +166,3 @@ allHeartbeatMatchers =
         genWeekdaysMatcher,
         genWeekendMatcher
     ]
-
--- TODO - create functions for each trend that return 
--- HeartbeatMatchers assemble into one large array
--- use this to match against trends

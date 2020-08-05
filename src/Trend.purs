@@ -45,3 +45,4 @@ getMatcherResults xs =
 -- TODO: More test cases for getMatcherResults
 -- calculate the price that is being paid for a trend
 -- create pipeline, split by merchant -> identify if trend is random process through autocorrelation-> find best match trend for each 
+-- given a transaction does it belong to a trend from a given set of trends

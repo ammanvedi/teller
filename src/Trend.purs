@@ -1,15 +1,15 @@
-module Trend where
+module Data.Teller.Trend where
 
 import Data.Array (head, last)
 import Data.Date (Date)
 import Data.Functor (map)
 import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple(..))
-import GenTypes (HeartbeatMatcher(..), HeartbeatMatchResult(..))
-import HeartbeatGen (allHeartbeatMatchers, generateHeartbeat)
+import Data.Teller.GenTypes (HeartbeatMatcher(..), HeartbeatMatchResult(..))
+import Data.Teller.HeartbeatGen (allHeartbeatMatchers, generateHeartbeat)
 import Prelude (bind, pure, ($))
-import SignalProcessing (naiveSignalMatch)
-import Transaction (TransactionRec, getBinaryHeartbeat, transactionDate)
+import Data.Teller.SignalProcessing (naiveSignalMatch)
+import Data.Teller.Transaction (TransactionRec, getBinaryHeartbeat, transactionDate)
 
 -- Holy grail function
 -- identifyTrend :: Array TransactionRec -> Maybe TrendDescription

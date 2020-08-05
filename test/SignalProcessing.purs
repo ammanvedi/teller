@@ -1,7 +1,7 @@
 module Test.SignalProcessing where
 
 import Prelude (Unit, discard, negate)
-import SignalProcessing (autoCorrelation, averageDistance, chunkConsec, diffChunks, findPeaks, naiveSignalMatch)
+import Data.Teller.SignalProcessing (autoCorrelation, averageDistance, chunkConsec, diffChunks, findPeaks, naiveSignalMatch)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
 

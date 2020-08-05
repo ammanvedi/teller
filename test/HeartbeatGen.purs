@@ -3,7 +3,7 @@ module Test.HeartbeatGen where
 import Data.Date (Date, Weekday(..), canonicalDate)
 import Data.Enum (toEnum)
 import Data.Maybe (fromMaybe)
-import HeartbeatGen (genEveryDay, genLastWeekDay, genWeekday, genWeekend, genXthDayOfMonth, generateHeartbeat)
+import Data.Teller.HeartbeatGen (genEveryDay, genLastWeekDay, genWeekday, genWeekend, genXthDayOfMonth, generateHeartbeat)
 import Prelude (Unit, bottom, discard)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)

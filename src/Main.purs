@@ -1,6 +1,6 @@
 module Main where 
 
-import Transaction as T
+import Data.Teller.Transaction as T
 
 getBinaryHeartbeat = T.getBinaryHeartbeat
 

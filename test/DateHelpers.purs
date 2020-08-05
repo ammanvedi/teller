@@ -3,7 +3,7 @@ module Test.Date where
 import Data.Date
 import Data.Enum (toEnum)
 import Data.Maybe (Maybe(..), fromMaybe)
-import DateHelpers (getStartOfMonth, getXDaysPrior)
+import Data.Teller.DateHelpers (getStartOfMonth, getXDaysPrior)
 import Prelude (Unit, bind, bottom, discard, negate, pure, ($))
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)

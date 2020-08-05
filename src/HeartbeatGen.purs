@@ -1,4 +1,4 @@
-module HeartbeatGen where
+module Data.Teller.HeartbeatGen where
 
 import Data.Array (index, (..))
 import Data.Date (Date, Day, Weekday(..), adjust, day, diff, lastDayOfMonth, month, weekday, year)
@@ -11,7 +11,7 @@ import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Newtype (unwrap)
 import Data.Time.Duration (Days(..))
 import Data.Tuple (Tuple(..))
-import GenTypes (HeartbeatGeneratorFn, HeartbeatMatcher(..), TrendDescription(..))
+import Data.Teller.GenTypes (HeartbeatGeneratorFn, HeartbeatMatcher(..), TrendDescription(..))
 import Prelude (($), (<>), (==), (-), (<), (&&), bottom)
 
 safeAdjust :: Days -> Date -> Date

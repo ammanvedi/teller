@@ -1,4 +1,4 @@
-module GenTypes where
+module Data.Teller.GenTypes where
 
 import Data.Date (Date, Weekday)
 import Data.Eq (class Eq)

@@ -1,4 +1,4 @@
-module DateHelpers where
+module Data.Teller.DateHelpers where
 
 import Prelude
 import Data.Date (Date, adjust, canonicalDate, month, year)

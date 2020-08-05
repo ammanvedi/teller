@@ -3,13 +3,12 @@ module Test.Trend where
 import Data.Array (head)
 import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple(..))
-import GenTypes (HeartbeatMatchResult(..), TrendDescription(..))
-import Prelude (Unit, discard, negate)
+import Data.Teller.GenTypes (HeartbeatMatchResult(..), TrendDescription(..))
+import Prelude (Unit)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
-import Test.Transaction (testTransaction)
-import Transaction (TransactionRec(..))
-import Trend (getMatcherResults)
+import Data.Teller.Transaction (TransactionRec(..))
+import Data.Teller.Trend (getMatcherResults)
 
 testTransactions :: Array TransactionRec
 testTransactions = [

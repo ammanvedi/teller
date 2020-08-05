@@ -1,4 +1,4 @@
-module Transaction where
+module Data.Teller.Transaction where
 
 import Prelude
 
@@ -14,7 +14,7 @@ import Data.Newtype (unwrap)
 import Data.Number.Format (precision, toStringWith)
 import Data.Set as Set
 import Data.Time.Duration (Milliseconds(..), Days)
-import SignalProcessing (chunkConsec)
+import Data.Teller.SignalProcessing (chunkConsec)
 import Data.Foldable (foldl)
 
 class Directional a where

@@ -1,4 +1,4 @@
-module SignalProcessing where
+module Data.Teller.SignalProcessing where
 
 import Prelude
 

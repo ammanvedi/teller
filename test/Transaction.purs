@@ -7,7 +7,7 @@ import Data.Set as Set
 import Prelude (Unit, discard)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
-import Transaction (TransactionRec(..), getBinaryHeartbeat, matchMerchant, transactionsForMerchant, uniqueMerchants, getTransactionMonth, transactionsOccurrInSuccessiveMonths, getHeartbeatChunk)
+import Data.Teller.Transaction (TransactionRec(..), getBinaryHeartbeat, matchMerchant, transactionsForMerchant, uniqueMerchants, getTransactionMonth, transactionsOccurrInSuccessiveMonths, getHeartbeatChunk)
 
 testTransaction :: TransactionRec
 testTransaction = TransactionRec ({

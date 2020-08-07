@@ -2,6 +2,7 @@ module Data.Teller.GenTypes where
 
 import Data.Date (Date, Weekday)
 import Data.Eq (class Eq)
+import Data.Newtype (class Newtype)
 import Data.Ord (class Ord)
 import Data.Show (class Show, show)
 import Data.Tuple (Tuple(..))
@@ -30,6 +31,8 @@ newtype HeartbeatMatcher =
     HeartbeatMatcher (Tuple HeartbeatGeneratorFn TrendDescription)
 
 newtype HeartbeatMatchResult = HeartbeatMatchResult (Tuple Number TrendDescription)
+
+derive instance heartbeatMatchResultNewType :: Newtype HeartbeatMatchResult _
 
 instance heartbeatMatchResultShow :: Show HeartbeatMatchResult where
     show (HeartbeatMatchResult (Tuple confidence description))

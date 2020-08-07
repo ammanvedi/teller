@@ -2,13 +2,14 @@ module Test.Trend where
 
 import Data.Array (head)
 import Data.Maybe (Maybe(..))
-import Data.Tuple (Tuple(..))
 import Data.Teller.GenTypes (HeartbeatMatchResult(..), TrendDescription(..))
-import Prelude (Unit)
+import Data.Teller.Transaction (TransactionRec(..))
+import Data.Teller.Trend (getMatcherResults, identifyTrends)
+import Data.Tuple (Tuple(..))
+import Prelude (Unit, discard)
+import Test.Fixtures (realTransactions)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
-import Data.Teller.Transaction (TransactionRec(..))
-import Data.Teller.Trend (getMatcherResults)
 
 testTransactions :: Array TransactionRec
 testTransactions = [
@@ -50,3 +51,7 @@ trendSpec =
                                 )
                             )
                     Nothing -> false `shouldEqual` true
+        describe "identifyTrends" do
+            it "identifies trends from a large dataset of real transactions" do
+                let res = identifyTrends realTransactions
+                res `shouldEqual` []

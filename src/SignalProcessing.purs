@@ -167,3 +167,10 @@ naiveSignalMatch x1 x2 = (valsThatMatch / listLeng) * 100.0
     where 
         valsThatMatch = toNumber $ getMatchingValues x1 x2
         listLeng = toNumber $ length x1
+
+estimatePeriod :: Array Int -> Number
+estimatePeriod xs =
+    averageDistance $ map toNumber peaks
+    where 
+        ac = autoCorrelation $ map toNumber xs
+        peaks = findPeaks ac 1 1.0

@@ -1,18 +1,44 @@
 module Data.Teller.Trend where
 
-import Data.Array (head, last)
+import Data.Array (head, last, fromFoldable, sort)
 import Data.Date (Date)
+import Data.Foldable (maximum)
 import Data.Functor (map)
 import Data.Maybe (Maybe(..))
-import Data.Tuple (Tuple(..))
-import Data.Teller.GenTypes (HeartbeatMatcher(..), HeartbeatMatchResult(..))
+import Data.Newtype (unwrap)
+import Data.Teller.GenTypes (HeartbeatMatchResult(..), HeartbeatMatcher(..), TrendDescription)
 import Data.Teller.HeartbeatGen (allHeartbeatMatchers, generateHeartbeat)
-import Prelude (bind, pure, ($))
-import Data.Teller.SignalProcessing (naiveSignalMatch)
-import Data.Teller.Transaction (TransactionRec, getBinaryHeartbeat, transactionDate)
+import Data.Teller.SignalProcessing (estimatePeriod, naiveSignalMatch)
+import Data.Teller.Transaction (TransactionRec, getBinaryHeartbeat, transactionDate, transactionsForMerchant, uniqueMerchants)
+import Data.Tuple (Tuple(..), snd)
+import Prelude (bind, pure, ($), (<))
+
+import Debug.Trace
+
+identifyTrend :: String -> Array TransactionRec -> Maybe TrendDescription
+identifyTrend m xs =
+    if (spy "p" period < 32.0)
+        then do
+            matchers <- pure $ getMatcherResults xs
+            maxMatch <- maximum matchers
+            pure $ snd $ unwrap maxMatch
+        else
+            Nothing
+    where
+        x = spy "merchant" m
+        heartbeat = spy "hb" $ getBinaryHeartbeat xs
+        period = estimatePeriod heartbeat
 
 -- Holy grail function
--- identifyTrend :: Array TransactionRec -> Maybe TrendDescription
+identifyTrends :: Array TransactionRec -> Array (Tuple String (Maybe TrendDescription))
+identifyTrends xs =
+    map (\ merchant -> 
+        Tuple 
+            merchant
+            (identifyTrend merchant $ sort $ transactionsForMerchant xs merchant)
+        ) merchants
+    where
+        merchants = fromFoldable $ uniqueMerchants xs
 
 
 

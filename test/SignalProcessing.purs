@@ -1,7 +1,7 @@
 module Test.SignalProcessing where
 
 import Prelude (Unit, discard, negate)
-import Data.Teller.SignalProcessing (autoCorrelation, averageDistance, chunkConsec, diffChunks, findPeaks, naiveSignalMatch)
+import Data.Teller.SignalProcessing (estimatePeriod, autoCorrelation, averageDistance, chunkConsec, diffChunks, findPeaks, naiveSignalMatch)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
 
@@ -48,6 +48,19 @@ signalProcessingSpec =
         describe "averageDistance" do
             it "returns the correct distance between peaks" do
                 let res = averageDistance [0.0, 7.0, 14.0, 21.0, 28.0, 35.0, 42.0, 49.0, 56.0, 63.0, 70.0]
+                res `shouldEqual` 7.0
+        describe "estimatePeriod" do
+            it "calculates period correctly" do
+                let res = estimatePeriod [
+                    1, 1, 1, 1, 1, 0, 0,
+                    1, 1, 1, 1, 1, 0, 0,
+                    1, 1, 1, 1, 1, 0, 0,
+                    1, 1, 1, 1, 1, 0, 0,
+                    1, 1, 1, 1, 1, 0, 0,
+                    1, 1, 1, 1, 1, 0, 0,
+                    1, 1, 1, 1, 1, 0, 0,
+                    1, 1, 1, 1, 1, 0, 0
+                    ]
                 res `shouldEqual` 7.0
         describe "naiveSignalMatch" do
             it "returns correctly for a 0 length array" do

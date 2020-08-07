@@ -1,7 +1,7 @@
 module Data.Teller.HeartbeatGen where
 
-import Data.Array (index, (..))
-import Data.Date (Date, Day, Weekday(..), adjust, day, diff, lastDayOfMonth, month, weekday, year)
+import Data.Array ((..))
+import Data.Date (Date, Day, adjust, day, diff, lastDayOfMonth, month, weekday, year)
 import Data.Date.Component (Weekday(..))
 import Data.Enum (fromEnum, toEnum)
 import Data.Foldable (foldl)

@@ -2,12 +2,12 @@ module Data.Teller.Transaction where
 
 import Prelude
 
-import Data.Array (filter, foldl, head, last, sort, tail, range)
+import Data.Array (filter, head, last, range, sort, tail)
 import Data.Date (Date, diff)
 import Data.Date.Component (Month)
 import Data.DateTime (month, date)
 import Data.DateTime.Instant (instant, toDateTime)
-import Data.Enum (defaultFromEnum, succ)
+import Data.Enum (succ)
 import Data.Int (floor, toNumber)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Newtype (unwrap)

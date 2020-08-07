@@ -72,3 +72,7 @@ getMatcherResults xs =
 -- calculate the price that is being paid for a trend
 -- create pipeline, split by merchant -> identify if trend is random process through autocorrelation-> find best match trend for each 
 -- given a transaction does it belong to a trend from a given set of trends
+
+-- need to either have matchers for every combination of days in a week
+-- or need to allow the top N matches through
+-- this is exemplified by the train matcher only atm returning that the transaction occurrs every tuesday

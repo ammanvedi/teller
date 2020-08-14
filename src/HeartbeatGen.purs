@@ -17,7 +17,7 @@ import Data.Teller.GenTypes (HeartbeatGeneratorFn, HeartbeatMatcher(..), TrendDe
 import Data.Time.Duration (Days(..))
 import Data.Tuple (Tuple(..))
 import Math (pow)
-import Prelude (bottom, otherwise, ($), (&&), (-), (<), (<>), (==), (>=), (+))
+import Prelude (bottom, ($), (&&), (+), (-), (<), (<>), (==), (>=))
 
 padStringLeftWith :: String -> String -> Int -> String
 padStringLeftWith s _ minLeng

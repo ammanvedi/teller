@@ -1,6 +1,6 @@
 module Test.HeartbeatGen where
 
-import Data.Date (Date, Weekday(..), canonicalDate)
+import Data.Date (Date, canonicalDate)
 import Data.Date.Component (Weekday(..))
 import Data.Enum (toEnum)
 import Data.Maybe (fromMaybe)

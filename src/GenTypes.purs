@@ -14,10 +14,12 @@ data TrendDescription
     = MonthDayTrendDescription {dayOfMonth :: Int}
     | LastWeekdayTrendDescription {weekday :: Weekday}
     | SpecificWeekdayTrendDescription {weekday :: Weekday}
+    | WeekdayTrendDescription {weekdays :: (Array Weekday)}
     | EveryWeekdayTrendDescription
     | WeekendTrendDescription
 
 instance trendDescriptionShow :: Show TrendDescription where
+    show (WeekdayTrendDescription desc) = "Occurs on these weekdays " <> show desc.weekdays
     show (MonthDayTrendDescription desc) = "Occurs every month on " <> show desc.dayOfMonth
     show (LastWeekdayTrendDescription desc) = "Occurs on the last " <> (show desc.weekday) <> "of each month"
     show (SpecificWeekdayTrendDescription desc) = "Occurs every week on " <> (show desc.weekday)

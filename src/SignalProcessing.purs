@@ -159,6 +159,8 @@ getMatchingValues x1 x2 =
     where
         zipped = zip x1 x2
 
+-- measure based on the percentage similarity between 
+-- two binary values
 naiveSignalMatch :: Array Int -> Array Int -> Number
 naiveSignalMatch [] [] = 100.0
 naiveSignalMatch _ [] = 0.0
@@ -167,6 +169,18 @@ naiveSignalMatch x1 x2 = (valsThatMatch / listLeng) * 100.0
     where 
         valsThatMatch = toNumber $ getMatchingValues x1 x2
         listLeng = toNumber $ length x1
+
+-- match based on how many positive points in first series
+-- match the second series
+hitCountMatch :: Array Int -> Array Int -> Number
+hitCountMatch x y =
+    toNumber $ foldl (\acc (Tuple a b) -> 
+        if (a == 1 && b == 1) 
+            then acc + 1 
+            else acc 
+        ) 0 zipped
+    where
+        zipped = zip x y
 
 estimatePeriod :: Array Int -> Number
 estimatePeriod xs =

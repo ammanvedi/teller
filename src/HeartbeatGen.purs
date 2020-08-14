@@ -1,18 +1,55 @@
 module Data.Teller.HeartbeatGen where
 
-import Data.Array ((..))
+import Data.Array ((..), (!!))
 import Data.Date (Date, Day, adjust, day, diff, lastDayOfMonth, month, weekday, year)
 import Data.Date.Component (Weekday(..))
 import Data.Enum (fromEnum, toEnum)
 import Data.Foldable (foldl)
+import Data.FoldableWithIndex (foldlWithIndex)
 import Data.Functor (map)
-import Data.Int (floor, toNumber)
+import Data.Int (binary, floor, toNumber, toStringAs)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Newtype (unwrap)
+import Data.String (length)
+import Data.String.Common (split)
+import Data.String.Pattern (Pattern(..))
+import Data.Teller.GenTypes (HeartbeatGeneratorFn, HeartbeatMatcher(..), TrendDescription(..))
 import Data.Time.Duration (Days(..))
 import Data.Tuple (Tuple(..))
-import Data.Teller.GenTypes (HeartbeatGeneratorFn, HeartbeatMatcher(..), TrendDescription(..))
-import Prelude (($), (<>), (==), (-), (<), (&&), bottom)
+import Math (pow)
+import Prelude (bottom, otherwise, ($), (&&), (-), (<), (<>), (==), (>=), (+))
+
+padStringLeftWith :: String -> String -> Int -> String
+padStringLeftWith s _ minLeng
+    | length s >= minLeng = s
+padStringLeftWith s padder minLeng = padStringLeftWith (padder <> s) padder minLeng
+
+numberToPaddedBinaryString :: Int -> Int -> String
+numberToPaddedBinaryString num length =
+    padStringLeftWith asBinary "0" length
+    where
+        asBinary = toStringAs binary num
+
+binParseInt :: String -> Int
+binParseInt s =
+    case s of
+        "0" -> 0
+        "1" -> 1
+        otherwise -> 0
+
+binaryStringToInts :: String -> Array Int
+binaryStringToInts s = 
+    map binParseInt splitString
+    where
+        splitString = split (Pattern "") s
+
+createAllBinaryPermutationsOfLength :: Int -> Array (Array Int)
+createAllBinaryPermutationsOfLength i =
+    map binaryStringToInts binaryStrings
+    where
+        binMax = floor $ (pow 2.0 (toNumber i)) - 1.0
+        numList = (1..(binMax))
+        binaryStrings = map (\xi -> numberToPaddedBinaryString xi i) numList
 
 safeAdjust :: Days -> Date -> Date
 safeAdjust d dt =
@@ -98,6 +135,40 @@ createMonthlyMatchers =
             (MonthDayTrendDescription { dayOfMonth: i })
         ) ) (1..31)
 
+binaryWeekPatternToMatcher :: Array Int -> HeartbeatGeneratorFn
+binaryWeekPatternToMatcher xs dt = 
+    case shouldOccur of
+        (Just x) -> x
+        Nothing -> 0
+    where
+        wkd = weekday dt
+        wkdIndex = (fromEnum wkd) - 1
+        shouldOccur = xs !! wkdIndex
+
+getOccurringWeekdays :: Array Int -> Array Weekday
+getOccurringWeekdays xs = 
+    foldlWithIndex (\ix acc xi -> 
+        case xi of
+            1 -> case toEnum (ix + 1) of
+                (Just w) -> acc <> [w]
+                Nothing -> acc
+            otherwise -> acc
+    ) [] xs
+
+-- Create matchers for every possible weekday combination
+-- for a single week
+
+createWeekdayMatchers :: Array HeartbeatMatcher
+createWeekdayMatchers =
+    map (\binSeq -> HeartbeatMatcher (
+        Tuple 
+            (binaryWeekPatternToMatcher binSeq)
+            (WeekdayTrendDescription {weekdays: (getOccurringWeekdays binSeq) })
+    )) binarySequences
+    where
+        binarySequences = createAllBinaryPermutationsOfLength 7
+
+
 -- Specific Weekdays
 
 genEveryMondayMatcher :: HeartbeatMatcher
@@ -154,14 +225,7 @@ genWeekendMatcher = HeartbeatMatcher (Tuple genWeekend WeekendTrendDescription)
 
 allHeartbeatMatchers :: Array HeartbeatMatcher
 allHeartbeatMatchers = 
-    createMonthlyMatchers <> [
-        genEveryMondayMatcher,
-        genEveryTuesdayMatcher,
-        genEveryWednesdayMatcher,
-        genEveryThursdayMatcher,
-        genEveryFridayMatcher,
-        genEverySaturdayMatcher,
-        genEverySundayMatcher,
+    createMonthlyMatchers <> createWeekdayMatchers <> [
         genLastFridayOfMonthMatcher,
         genWeekdaysMatcher,
         genWeekendMatcher

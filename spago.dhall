@@ -16,6 +16,7 @@ You can edit this file as you like.
   , "integers"
   , "js-date"
   , "lists"
+  , "math"
   , "maybe"
   , "now"
   , "numbers"

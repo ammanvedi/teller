@@ -1,6 +1,8 @@
 module Data.Teller.Trend where
 
-import Data.Array (head, last, fromFoldable, sort)
+import Debug.Trace
+
+import Data.Array (fromFoldable, head, last, reverse, sort)
 import Data.Date (Date)
 import Data.Foldable (maximum)
 import Data.Functor (map)
@@ -8,25 +10,22 @@ import Data.Maybe (Maybe(..))
 import Data.Newtype (unwrap)
 import Data.Teller.GenTypes (HeartbeatMatchResult(..), HeartbeatMatcher(..), TrendDescription)
 import Data.Teller.HeartbeatGen (allHeartbeatMatchers, generateHeartbeat)
-import Data.Teller.SignalProcessing (estimatePeriod, naiveSignalMatch)
+import Data.Teller.SignalProcessing (estimatePeriod, hitCountMatch, naiveSignalMatch)
 import Data.Teller.Transaction (TransactionRec, getBinaryHeartbeat, transactionDate, transactionsForMerchant, uniqueMerchants)
 import Data.Tuple (Tuple(..), snd)
 import Prelude (bind, pure, ($), (<))
 
-import Debug.Trace
-
 identifyTrend :: String -> Array TransactionRec -> Maybe TrendDescription
 identifyTrend m xs =
-    if (spy "p" period < 32.0)
+    if period < 32.0
         then do
-            matchers <- pure $ getMatcherResults xs
+            matchers <- pure $ spy "mr" (reverse $ sort $ getMatcherResults xs)
             maxMatch <- maximum matchers
             pure $ snd $ unwrap maxMatch
         else
             Nothing
     where
-        x = spy "merchant" m
-        heartbeat = spy "hb" $ getBinaryHeartbeat xs
+        heartbeat = getBinaryHeartbeat xs
         period = estimatePeriod heartbeat
 
 -- Holy grail function

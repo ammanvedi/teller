@@ -1,7 +1,7 @@
 module Test.SignalProcessing where
 
 import Prelude (Unit, discard, negate)
-import Data.Teller.SignalProcessing (estimatePeriod, autoCorrelation, averageDistance, chunkConsec, diffChunks, findPeaks, naiveSignalMatch)
+import Data.Teller.SignalProcessing (OTU(..), calculateOTU, estimatePeriod, autoCorrelation, averageDistance, chunkConsec, diffChunks, findPeaks, naiveSignalMatch)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
 
@@ -62,6 +62,10 @@ signalProcessingSpec =
                     1, 1, 1, 1, 1, 0, 0
                     ]
                 res `shouldEqual` 7.0
+        describe "calculateOTU" do
+            it "calculates the OTU" do
+                let res = calculateOTU [1, 1, 1, 0, 1, 0, 0, 1, 1] [1, 0, 1, 1, 0, 0, 1, 1, 0]
+                res `shouldEqual` (OTU 3 3 2 1 9)
         describe "naiveSignalMatch" do
             it "returns correctly for a 0 length array" do
                 let res = naiveSignalMatch [] []

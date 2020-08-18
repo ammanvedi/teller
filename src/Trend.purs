@@ -4,16 +4,16 @@ import Debug.Trace
 
 import Data.Array (fromFoldable, head, last, reverse, sort)
 import Data.Date (Date)
-import Data.Foldable (maximum)
+import Data.Foldable (foldl, maximum)
 import Data.Functor (map)
 import Data.Maybe (Maybe(..))
 import Data.Newtype (unwrap)
 import Data.Teller.GenTypes (HeartbeatMatchResult(..), HeartbeatMatcher(..), TrendDescription)
 import Data.Teller.HeartbeatGen (allHeartbeatMatchers, generateHeartbeat)
-import Data.Teller.SignalProcessing (estimatePeriod, naiveSignalMatch)
+import Data.Teller.SignalProcessing (estimatePeriod, gilbertAndWellsSimilarity, naiveSignalMatch)
 import Data.Teller.Transaction (TransactionRec, getBinaryHeartbeat, transactionDate, transactionsForMerchant, uniqueMerchants)
 import Data.Tuple (Tuple(..), snd)
-import Prelude (bind, pure, ($), (<))
+import Prelude (bind, pure, ($), (<), (<>))
 
 identifyTrend :: String -> Array TransactionRec -> Maybe TrendDescription
 identifyTrend m xs =
@@ -29,17 +29,15 @@ identifyTrend m xs =
         period = estimatePeriod heartbeat
 
 -- Holy grail function
-identifyTrends :: Array TransactionRec -> Array (Tuple String (Maybe TrendDescription))
+identifyTrends :: Array TransactionRec -> Array (Tuple String TrendDescription)
 identifyTrends xs =
-    map (\ merchant -> 
-        Tuple 
-            merchant
-            (identifyTrend merchant $ sort $ transactionsForMerchant xs merchant)
-        ) merchants
+    foldl (\ acc merchant -> 
+        case (identifyTrend merchant $ sort $ transactionsForMerchant xs merchant) of
+            (Just t) -> acc <> [Tuple merchant t]
+            Nothing -> acc
+        ) [] merchants
     where
         merchants = fromFoldable $ uniqueMerchants xs
-
-
 
 matchAgainstHeartbeat :: Date -> Date -> Array Int -> HeartbeatMatcher -> HeartbeatMatchResult
 matchAgainstHeartbeat dStart dEnd hb (HeartbeatMatcher (Tuple genFunc desc)) =

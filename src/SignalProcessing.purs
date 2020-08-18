@@ -2,6 +2,7 @@ module Data.Teller.SignalProcessing where
 
 import Prelude
 
+import Math (log)
 import Data.Array (filter, fromFoldable, head, index, last, length, mapWithIndex, slice, sort, zip)
 import Data.Foldable (foldl, sum)
 import Data.FoldableWithIndex (foldlWithIndex)
@@ -9,6 +10,8 @@ import Data.Int (toNumber)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Ord (abs)
 import Data.Set as Set
+import Data.Show (class Show, show)
+import Data.Eq (class Eq)
 import Data.Tuple (Tuple(..), snd, fst)
 
 newtype IndexedTuple = IndexedTuple (Tuple Int Number)
@@ -182,9 +185,47 @@ hitCountMatch x y =
     where
         zipped = zip x y
 
+
+
 estimatePeriod :: Array Int -> Number
 estimatePeriod xs =
     averageDistance $ map toNumber peaks
     where 
         ac = autoCorrelation $ map toNumber xs
         peaks = findPeaks ac 1 1.0
+
+-- Operational Taxonomic Units (a b c d n)
+data OTU = OTU Int Int Int Int Int
+
+instance showOTU :: Show OTU where
+    show (OTU a b c d n) = "a: " <> (show a) <> ", b: " <> (show b) <> ", c: " <> (show c) <> ", d: " <> (show d) <> ", n: " <> (show n)
+
+instance eqOTU :: Eq OTU where
+    eq (OTU ai bi ci di ni) (OTU aj bj cj dj nj) =
+        ai == aj && bi == bj && ci == cj && di == dj && ni == nj
+
+updateOTUForPosition :: Tuple Int Int -> OTU -> OTU
+updateOTUForPosition (Tuple ji ii) (OTU a b c d n) 
+    | ji == 1 && ii == 1 = (OTU (a + 1) b c d n)
+    | ji == 1 && ii == 0 = (OTU a (b + 1) c d n)
+    | ji == 0 && ii == 1 = (OTU a b (c + 1) d n)
+    | ji == 0 && ii == 0 = (OTU a b c (d + 1) n)
+    | otherwise = OTU a b c d n
+
+-- http://www.iiisci.org/journal/CV$/sci/pdfs/GS315JG.pdf
+calculateOTU :: Array Int -> Array Int -> OTU
+calculateOTU a b = 
+    foldl (\otu zipTuple -> updateOTUForPosition zipTuple otu) (OTU 0 0 0 0 (length a)) zippedSeq
+    where
+        zippedSeq = zip a b
+
+gilbertAndWellsSimilarity :: Array Int -> Array Int -> Number
+gilbertAndWellsSimilarity as bs =
+    (log anum) - (log nnum) - (log ((anum + bnum) / nnum)) - (log ((anum + cnum) / nnum))
+    where
+        (OTU a b c d n) = calculateOTU as bs
+        anum = toNumber a
+        bnum = toNumber b
+        cnum = toNumber c
+        dnum = toNumber d
+        nnum = toNumber n

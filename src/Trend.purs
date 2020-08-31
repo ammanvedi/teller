@@ -1,7 +1,5 @@
 module Data.Teller.Trend where
 
-import Debug.Trace
-
 import Data.Array (fromFoldable, head, last, reverse, sort)
 import Data.Date (Date)
 import Data.Foldable (foldl, maximum)
@@ -19,7 +17,7 @@ identifyTrend :: String -> Array TransactionRec -> Maybe TrendDescription
 identifyTrend m xs =
     if period < 32.0
         then do
-            matchers <- pure $ spy "mr" (reverse $ sort $ getMatcherResults xs)
+            matchers <- pure $ (reverse $ sort $ getMatcherResults xs)
             maxMatch <- maximum matchers
             pure $ snd $ unwrap maxMatch
         else

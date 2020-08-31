@@ -12,9 +12,9 @@ type HeartbeatGeneratorFn = Date -> Int
 
 data TrendDescription 
     = MonthDayTrendDescription {dayOfMonth :: Int}
-    | LastWeekdayTrendDescription {weekday :: Weekday}
-    | SpecificWeekdayTrendDescription {weekday :: Weekday}
-    | WeekdayTrendDescription {weekdays :: (Array Weekday)}
+    | LastWeekdayTrendDescription {weekday :: Int}
+    | SpecificWeekdayTrendDescription {weekday :: Int}
+    | WeekdayTrendDescription {weekdays :: (Array Int)}
     | EveryWeekdayTrendDescription
     | WeekendTrendDescription
 

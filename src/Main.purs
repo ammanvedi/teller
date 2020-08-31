@@ -1,8 +1,5 @@
 module Main where 
 
-import Data.Teller.Transaction as T
+import Data.Teller.Trend as Trend
 
-getBinaryHeartbeat = T.getBinaryHeartbeat
-
-transactionsOccurrInSuccessiveMonths = T.transactionsOccurrInSuccessiveMonths
-
+identifyTrends = Trend.identifyTrends

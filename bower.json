@@ -26,6 +26,7 @@
         "purescript-integers": "^v4.0.0",
         "purescript-js-date": "^v6.0.0",
         "purescript-lists": "^v5.4.1",
+        "purescript-math": "^v2.1.1",
         "purescript-maybe": "^v4.0.1",
         "purescript-now": "^v4.0.0",
         "purescript-numbers": "^v7.0.0",

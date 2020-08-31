@@ -6,65 +6,59 @@ export type TransactionRec = {
   reference: String;
 };
 
-export class MonthDayTrendDescription {
-  value0: {
+export class TrendDescription {}
+
+export class MonthDayTrendDescription extends TrendDescription {
+  public value0: {
     dayOfMonth: number;
   };
 }
 
-export class LastWeekdayTrendDescription {
-  value0: {
+export class LastWeekdayTrendDescription extends TrendDescription {
+  public value0: {
     weekday: number;
   };
 }
 
-export class SpecificWeekdayTrendDescription {
-  value0: {
+export class SpecificWeekdayTrendDescription extends TrendDescription {
+  public value0: {
     weekday: number;
   };
 }
 
-export class WeekdayTrendDescription {
-  value0: {
+export class WeekdayTrendDescription extends TrendDescription {
+  public value0: {
     weekdays: Array<number>;
   };
 }
 
-export class EveryWeekdayTrendDescription {}
+export class EveryWeekdayTrendDescription extends TrendDescription {}
 
-export class WeekendTrendDescription {}
+export class WeekendTrendDescription extends TrendDescription {}
 
 export function isMonthDayTrendDescription(
-  inst: any
+  inst: TrendDescription
 ): inst is MonthDayTrendDescription;
 
 export function isLastWeekdayTrendDescription(
-  inst: any
+  inst: TrendDescription
 ): inst is LastWeekdayTrendDescription;
 
 export function isSpecificWeekdayTrendDescription(
-  inst: any
+  inst: TrendDescription
 ): inst is SpecificWeekdayTrendDescription;
 
 export function isWeekdayTrendDescription(
-  inst: any
+  inst: TrendDescription
 ): inst is WeekdayTrendDescription;
 
 export function isEveryWeekdayTrendDescription(
-  inst: any
+  inst: TrendDescription
 ): inst is EveryWeekdayTrendDescription;
 
 export function isWeekendTrendDescription(
-  inst: any
+  inst: TrendDescription
 ): inst is WeekendTrendDescription;
-
-type TrendDescription =
-  | MonthDayTrendDescription
-  | LastWeekdayTrendDescription
-  | SpecificWeekdayTrendDescription
-  | WeekdayTrendDescription
-  | EveryWeekdayTrendDescription
-  | WeekendTrendDescription;
 
 export type MerchantName = string;
 

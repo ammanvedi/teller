@@ -1,6 +1,6 @@
 module Data.Teller.GenTypes where
 
-import Data.Date (Date, Weekday)
+import Data.Date (Date)
 import Data.Eq (class Eq)
 import Data.Newtype (class Newtype)
 import Data.Ord (class Ord)

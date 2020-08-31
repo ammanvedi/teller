@@ -18,6 +18,46 @@ data TrendDescription
     | EveryWeekdayTrendDescription
     | WeekendTrendDescription
 
+-- Since we have trouble exporting the type constructor
+-- we define functions we can use to determine if a
+-- trenddescription instance is a specific sub constructor
+
+isMonthDayTrendDescription :: TrendDescription -> Boolean
+isMonthDayTrendDescription t =
+    case t of
+        (MonthDayTrendDescription _) -> true
+        otherwise -> false
+
+isLastWeekdayTrendDescription :: TrendDescription -> Boolean
+isLastWeekdayTrendDescription t =
+    case t of
+        (LastWeekdayTrendDescription _) -> true
+        otherwise -> false
+
+isSpecificWeekdayTrendDescription :: TrendDescription -> Boolean
+isSpecificWeekdayTrendDescription t =
+    case t of
+        (SpecificWeekdayTrendDescription _) -> true
+        otherwise -> false
+
+isWeekdayTrendDescription :: TrendDescription -> Boolean
+isWeekdayTrendDescription t =
+    case t of
+        (WeekdayTrendDescription _) -> true
+        otherwise -> false
+
+isEveryWeekdayTrendDescription :: TrendDescription -> Boolean
+isEveryWeekdayTrendDescription t =
+    case t of
+        (EveryWeekdayTrendDescription) -> true
+        otherwise -> false
+
+isWeekendTrendDescription :: TrendDescription -> Boolean
+isWeekendTrendDescription t =
+    case t of
+        (WeekendTrendDescription) -> true
+        otherwise -> false
+
 instance trendDescriptionShow :: Show TrendDescription where
     show (WeekdayTrendDescription desc) = "Occurs on these weekdays " <> show desc.weekdays
     show (MonthDayTrendDescription desc) = "Occurs every month on " <> show desc.dayOfMonth

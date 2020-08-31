@@ -1,5 +1,21 @@
-module Data.Teller where 
+module Data.Teller (
+    identifyTrends,
+    isMonthDayTrendDescription,
+    isLastWeekdayTrendDescription,
+    isSpecificWeekdayTrendDescription,
+    isWeekdayTrendDescription,
+    isEveryWeekdayTrendDescription,
+    isWeekendTrendDescription
+) where 
 
-import Data.Teller.Trend as Trend
+import Data.Teller.GenTypes as GT
+import Data.Teller.Trend (identifyTrends) as T
 
-identifyTrends = Trend.identifyTrends
+identifyTrends = T.identifyTrends
+
+isMonthDayTrendDescription = GT.isMonthDayTrendDescription
+isLastWeekdayTrendDescription = GT.isLastWeekdayTrendDescription
+isSpecificWeekdayTrendDescription = GT.isSpecificWeekdayTrendDescription
+isWeekdayTrendDescription = GT.isWeekdayTrendDescription
+isEveryWeekdayTrendDescription = GT.isEveryWeekdayTrendDescription
+isWeekendTrendDescription = GT.isWeekendTrendDescription

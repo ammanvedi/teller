@@ -9,4 +9,5 @@ git add . --quiet
 git commit -m "update package json version" --quiet
 spago bump-version $bumpVersion --no-dry-run
 git push --follow-tags --quiet
+npm publish
 pulp publish

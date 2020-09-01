@@ -12,4 +12,3 @@ git push --follow-tags
 npm publish
 pulp docs
 pulp publish --no-push
-echo "PLEASE RUN \"pulp publish --no-push\" to publish to pursuit"

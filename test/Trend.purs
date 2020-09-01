@@ -1,6 +1,6 @@
 module Test.Trend where
 
-import Data.Array (head, length)
+import Data.Array (head)
 import Data.Maybe (Maybe(..))
 import Data.Teller.GenTypes (HeartbeatMatchResult(..), TrendDescription(..))
 import Data.Teller.Transaction (TransactionRec(..))

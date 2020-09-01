@@ -4,10 +4,9 @@ import Data.Date.Component (Weekday(..))
 import Data.Teller.GenTypes (TrendDescription(..))
 import Data.Teller.Price (addPricingToTrend, getLastAmount, getPricingForWeekdays, intArrayToWeekdayArray)
 import Data.Teller.Transaction (TransactionRec(..))
-import Prelude (Unit, discard, negate, otherwise)
+import Prelude (Unit, discard, negate)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
-import Test.Transaction (testTransaction)
 
 testTransactions :: Array TransactionRec
 testTransactions = [

@@ -1,11 +1,11 @@
 module Test.Transaction where
 
 import Data.Array as Array
-import Data.Date (Month(..), Weekday(..))
+import Data.Date (Month(..))
 import Data.Date.Component (Weekday(..))
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Set as Set
-import Data.Teller.Transaction (TransactionRec(..), getBinaryHeartbeat, getHeartbeatChunk, getTransactionMonth, getTransactionsForWeekDay, getTransactionsForWeekDay, matchMerchant, transactionsForMerchant, transactionsOccurrInSuccessiveMonths, uniqueMerchants)
+import Data.Teller.Transaction (TransactionRec(..), getBinaryHeartbeat, getHeartbeatChunk, getTransactionMonth, getTransactionsForWeekDay, matchMerchant, transactionsForMerchant, transactionsOccurrInSuccessiveMonths, uniqueMerchants)
 import Prelude (Unit, discard)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)

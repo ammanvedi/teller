@@ -1,4 +1,4 @@
-<a href="https://pursuit.purescript.org/packages/purescript-teller/10.1.4/docs/Data.Teller">
+<a href="https://pursuit.purescript.org/packages/purescript-teller">
 
 <img src="https://pursuit.purescript.org/packages/purescript-teller/badge" />
 

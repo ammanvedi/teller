@@ -5,7 +5,8 @@ module Data.Teller (
     isSpecificWeekdayTrendDescription,
     isWeekdayTrendDescription,
     isEveryWeekdayTrendDescription,
-    isWeekendTrendDescription
+    isWeekendTrendDescription,
+    x
 ) where 
 
 import Data.Teller.GenTypes as GT
@@ -20,4 +21,5 @@ isWeekdayTrendDescription = GT.isWeekdayTrendDescription
 isEveryWeekdayTrendDescription = GT.isEveryWeekdayTrendDescription
 isWeekendTrendDescription = GT.isWeekendTrendDescription
 
+x :: String
 x = "test"

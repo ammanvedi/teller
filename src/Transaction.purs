@@ -3,19 +3,19 @@ module Data.Teller.Transaction where
 import Prelude
 
 import Data.Array (filter, head, last, range, sort, tail)
-import Data.Date (Date, diff)
+import Data.Date (Date, Weekday, diff, weekday)
 import Data.Date.Component (Month)
 import Data.DateTime (month, date)
 import Data.DateTime.Instant (instant, toDateTime)
 import Data.Enum (succ)
+import Data.Foldable (foldl)
 import Data.Int (floor, toNumber)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Newtype (unwrap)
 import Data.Number.Format (precision, toStringWith)
 import Data.Set as Set
-import Data.Time.Duration (Milliseconds(..), Days)
 import Data.Teller.SignalProcessing (chunkConsec)
-import Data.Foldable (foldl)
+import Data.Time.Duration (Milliseconds(..), Days)
 
 class Directional a where
     outgoing :: a -> Boolean
@@ -113,6 +113,17 @@ transactionDate (TransactionRec t) =
     where
         msDuration = Milliseconds $ t.timestamp
         tInstant = instant msDuration
+
+getTransactionsForWeekDay :: Array TransactionRec -> Weekday -> Array TransactionRec
+getTransactionsForWeekDay xs w
+    = foldl (\acc t -> 
+            case transactionDate t of
+                (Just date) -> 
+                    if (weekday date) == w
+                        then acc <> [t]
+                        else acc
+                Nothing -> acc
+        ) [] xs
 
 getHeartbeatChunk :: Array TransactionRec -> Maybe (Array Int)
 getHeartbeatChunk xs = do 

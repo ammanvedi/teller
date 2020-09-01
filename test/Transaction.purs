@@ -1,13 +1,14 @@
 module Test.Transaction where
 
 import Data.Array as Array
-import Data.Date (Month(..))
+import Data.Date (Month(..), Weekday(..))
+import Data.Date.Component (Weekday(..))
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Set as Set
+import Data.Teller.Transaction (TransactionRec(..), getBinaryHeartbeat, getHeartbeatChunk, getTransactionMonth, getTransactionsForWeekDay, getTransactionsForWeekDay, matchMerchant, transactionsForMerchant, transactionsOccurrInSuccessiveMonths, uniqueMerchants)
 import Prelude (Unit, discard)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
-import Data.Teller.Transaction (TransactionRec(..), getBinaryHeartbeat, matchMerchant, transactionsForMerchant, uniqueMerchants, getTransactionMonth, transactionsOccurrInSuccessiveMonths, getHeartbeatChunk)
 
 testTransaction :: TransactionRec
 testTransaction = TransactionRec ({
@@ -60,14 +61,14 @@ testRangeTransactions :: Array TransactionRec
 testRangeTransactions = [
     TransactionRec ({
             accountId: "acc",
-            timestamp: 1595721600000.0, -- 26 jul
+            timestamp: 1595721600000.0, -- 26 jul 2020 sun
             amount: 10.0,
             merchantName: "TFL",
             reference: "TFL X"
         }),
     TransactionRec ({
             accountId: "acc",
-            timestamp: 1596585600000.0, -- 5 aug
+            timestamp: 1596585600000.0, -- 5 aug 2020 wed
             amount: 10.0,
             merchantName: "TFL",
             reference: "BAR XY"
@@ -180,3 +181,13 @@ transactionSpec =
         it "calculates the correct heartbeat for a series of transactions" do
             let res = getBinaryHeartbeat hbTransactions
             res `shouldEqual` [1,1,0,0,0,0,0,0,0,0,0,0,1,0,1]
+    describe "getTransactionsForWeekday" do
+        it "returns an empty array if no weekdays requested exist" do
+            let res = getTransactionsForWeekDay testRangeTransactions Friday
+            res `shouldEqual` []
+        it "returns an empty array if no weekdays requested exist" do
+            let res = getTransactionsForWeekDay testRangeTransactions Sunday
+            case testRangeTransactions `Array.index` 0 of
+                (Just t) -> res `shouldEqual` [t]
+                Nothing -> false `shouldEqual` true
+            

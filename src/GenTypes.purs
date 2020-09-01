@@ -11,12 +11,28 @@ import Prelude (Ordering(..), otherwise, (<>), (==), (>), (<))
 type HeartbeatGeneratorFn = Date -> Int
 
 data TrendDescription 
-    = MonthDayTrendDescription {dayOfMonth :: Int}
-    | LastWeekdayTrendDescription {weekday :: Int}
-    | SpecificWeekdayTrendDescription {weekday :: Int}
-    | WeekdayTrendDescription {weekdays :: (Array Int)}
-    | EveryWeekdayTrendDescription
-    | WeekendTrendDescription
+    = MonthDayTrendDescription {
+            dayOfMonth :: Int,
+            pricing :: Number
+        }
+    | LastWeekdayTrendDescription {
+            weekday :: Int,
+            pricing :: Number
+        }
+    | SpecificWeekdayTrendDescription {
+            weekday :: Int,
+            pricing :: Number
+        }
+    | WeekdayTrendDescription {
+            weekdays :: (Array Int),
+            pricing :: (Array Number)
+        }
+    | EveryWeekdayTrendDescription {
+            pricing :: (Array Number)
+        }
+    | WeekendTrendDescription {
+            pricing :: (Array Number)
+        }
 
 -- Since we have trouble exporting the type constructor
 -- we define functions we can use to determine if a
@@ -49,22 +65,22 @@ isWeekdayTrendDescription t =
 isEveryWeekdayTrendDescription :: TrendDescription -> Boolean
 isEveryWeekdayTrendDescription t =
     case t of
-        (EveryWeekdayTrendDescription) -> true
+        (EveryWeekdayTrendDescription _) -> true
         otherwise -> false
 
 isWeekendTrendDescription :: TrendDescription -> Boolean
 isWeekendTrendDescription t =
     case t of
-        (WeekendTrendDescription) -> true
+        (WeekendTrendDescription _) -> true
         otherwise -> false
 
 instance trendDescriptionShow :: Show TrendDescription where
-    show (WeekdayTrendDescription desc) = "Occurs on these weekdays " <> show desc.weekdays
-    show (MonthDayTrendDescription desc) = "Occurs every month on " <> show desc.dayOfMonth
-    show (LastWeekdayTrendDescription desc) = "Occurs on the last " <> (show desc.weekday) <> "of each month"
-    show (SpecificWeekdayTrendDescription desc) = "Occurs every week on " <> (show desc.weekday)
-    show EveryWeekdayTrendDescription = "Occurs on weekdays"
-    show WeekendTrendDescription = "Occurs on saturdays and sundays"
+    show (WeekdayTrendDescription desc) = "Occurs on these weekdays " <> show desc.weekdays <> " at price " <> show desc.pricing
+    show (MonthDayTrendDescription desc) = "Occurs every month on " <> show desc.dayOfMonth <> " at price " <> show desc.pricing
+    show (LastWeekdayTrendDescription desc) = "Occurs on the last " <> (show desc.weekday) <> " of each month " <> " at price " <> show desc.pricing
+    show (SpecificWeekdayTrendDescription desc) = "Occurs every week on " <> (show desc.weekday) <> " at price " <> show desc.pricing
+    show (EveryWeekdayTrendDescription desc) = "Occurs on weekdays" <> " at price " <> show desc.pricing
+    show (WeekendTrendDescription desc) = "Occurs on saturdays and sundays" <> " at price " <> show desc.pricing
 
 instance trendDescriptionEq :: Eq TrendDescription where
     eq t1 t2 = (show t1) == (show t2)

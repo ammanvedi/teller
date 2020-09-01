@@ -132,7 +132,7 @@ createMonthlyMatchers =
     map (\ i -> 
         HeartbeatMatcher (
             Tuple (genXthDayOfMonth i) 
-            (MonthDayTrendDescription { dayOfMonth: i })
+            (MonthDayTrendDescription { dayOfMonth: i, pricing: 0.0 })
         ) ) (1..31)
 
 binaryWeekPatternToMatcher :: Array Int -> HeartbeatGeneratorFn
@@ -163,7 +163,7 @@ createWeekdayMatchers =
     map (\binSeq -> HeartbeatMatcher (
         Tuple 
             (binaryWeekPatternToMatcher binSeq)
-            (WeekdayTrendDescription {weekdays: (map fromEnum  $ getOccurringWeekdays binSeq) })
+            (WeekdayTrendDescription {weekdays: (map fromEnum  $ getOccurringWeekdays binSeq), pricing: [] })
     )) binarySequences
     where
         binarySequences = createAllBinaryPermutationsOfLength 7
@@ -174,54 +174,54 @@ createWeekdayMatchers =
 genEveryMondayMatcher :: HeartbeatMatcher
 genEveryMondayMatcher = HeartbeatMatcher (
             Tuple (genSpecificWeekday Monday) 
-(SpecificWeekdayTrendDescription { weekday: fromEnum Monday }))
+(SpecificWeekdayTrendDescription { weekday: fromEnum Monday, pricing: 0.0 }))
 
 genEveryTuesdayMatcher :: HeartbeatMatcher
 genEveryTuesdayMatcher = HeartbeatMatcher (
             Tuple (genSpecificWeekday Tuesday) 
-(SpecificWeekdayTrendDescription { weekday: fromEnum Tuesday }))
+(SpecificWeekdayTrendDescription { weekday: fromEnum Tuesday, pricing: 0.0 }))
 
 genEveryWednesdayMatcher :: HeartbeatMatcher
 genEveryWednesdayMatcher = HeartbeatMatcher (
             Tuple (genSpecificWeekday Wednesday) 
-(SpecificWeekdayTrendDescription { weekday: fromEnum Wednesday }))
+(SpecificWeekdayTrendDescription { weekday: fromEnum Wednesday, pricing: 0.0 }))
 
 genEveryThursdayMatcher :: HeartbeatMatcher
 genEveryThursdayMatcher = HeartbeatMatcher (
             Tuple (genSpecificWeekday Thursday) 
-(SpecificWeekdayTrendDescription { weekday: fromEnum Thursday }))
+(SpecificWeekdayTrendDescription { weekday: fromEnum Thursday, pricing: 0.0 }))
 
 genEveryFridayMatcher :: HeartbeatMatcher
 genEveryFridayMatcher = HeartbeatMatcher (
             Tuple (genSpecificWeekday Friday) 
-(SpecificWeekdayTrendDescription { weekday: fromEnum Friday }))
+(SpecificWeekdayTrendDescription { weekday: fromEnum Friday, pricing: 0.0 }))
 
 genEverySaturdayMatcher :: HeartbeatMatcher
 genEverySaturdayMatcher = HeartbeatMatcher (
             Tuple (genSpecificWeekday Saturday) 
-(SpecificWeekdayTrendDescription { weekday: fromEnum Saturday }))
+(SpecificWeekdayTrendDescription { weekday: fromEnum Saturday, pricing: 0.0 }))
 
 genEverySundayMatcher :: HeartbeatMatcher
 genEverySundayMatcher = HeartbeatMatcher (
             Tuple (genSpecificWeekday Sunday) 
-(SpecificWeekdayTrendDescription { weekday: fromEnum Sunday }))
+(SpecificWeekdayTrendDescription { weekday: fromEnum Sunday, pricing: 0.0 }))
 
 -- Last weekday of month
 
 genLastFridayOfMonthMatcher :: HeartbeatMatcher
 genLastFridayOfMonthMatcher = HeartbeatMatcher (
             Tuple (genLastWeekDay Friday) 
-(LastWeekdayTrendDescription { weekday: fromEnum Friday }))
+(LastWeekdayTrendDescription { weekday: fromEnum Friday, pricing: 0.0 }))
 
 -- Weekdays
 
 genWeekdaysMatcher :: HeartbeatMatcher
-genWeekdaysMatcher = HeartbeatMatcher (Tuple genWeekday EveryWeekdayTrendDescription)
+genWeekdaysMatcher = HeartbeatMatcher (Tuple genWeekday (EveryWeekdayTrendDescription {pricing: []}))
 
 -- Weekends
 
 genWeekendMatcher :: HeartbeatMatcher
-genWeekendMatcher = HeartbeatMatcher (Tuple genWeekend WeekendTrendDescription)
+genWeekendMatcher = HeartbeatMatcher (Tuple genWeekend (WeekendTrendDescription {pricing: []}))
 
 allHeartbeatMatchers :: Array HeartbeatMatcher
 allHeartbeatMatchers = 

@@ -8,6 +8,7 @@ import Data.Maybe (Maybe(..))
 import Data.Newtype (unwrap)
 import Data.Teller.GenTypes (HeartbeatMatchResult(..), HeartbeatMatcher(..), TrendDescription)
 import Data.Teller.HeartbeatGen (allHeartbeatMatchers, generateHeartbeat)
+import Data.Teller.Price (addPricingToTrend)
 import Data.Teller.SignalProcessing (estimatePeriod, naiveSignalMatch)
 import Data.Teller.Transaction (TransactionRec, getBinaryHeartbeat, transactionDate, transactionsForMerchant, uniqueMerchants)
 import Data.Tuple (Tuple(..), snd)
@@ -19,7 +20,8 @@ identifyTrend m xs =
         then do
             matchers <- pure $ (reverse $ sort $ getMatcherResults xs)
             maxMatch <- maximum matchers
-            pure $ snd $ unwrap maxMatch
+            winningTrend <- Just (snd $ unwrap maxMatch)
+            pure $ addPricingToTrend xs winningTrend
         else
             Nothing
     where
@@ -29,8 +31,11 @@ identifyTrend m xs =
 -- Holy grail function
 identifyTrends :: Array TransactionRec -> Array (Tuple String TrendDescription)
 identifyTrends xs =
-    foldl (\ acc merchant -> 
-        case (identifyTrend merchant $ sort $ transactionsForMerchant xs merchant) of
+    foldl (\ acc merchant ->
+        case (identifyTrend merchant 
+            $ sort 
+            $ transactionsForMerchant xs merchant
+            ) of
             (Just t) -> acc <> [Tuple merchant t]
             Nothing -> acc
         ) [] merchants

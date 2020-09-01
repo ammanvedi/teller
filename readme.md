@@ -74,10 +74,11 @@ result.forEach((tr) => {
   }
 
   if (isSpecificWeekdayTrendDescription(trend)) {
+    // Monday is 1, Sunday is 7
     const days = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
     console.log(
-      `${merchant} transaction happens every ${days[trend.value0.weekday]}`
+      `${merchant} transaction happens every ${days[trend.value0.weekday - 1]}`
     );
   }
 });

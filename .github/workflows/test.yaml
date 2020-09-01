@@ -1,0 +1,13 @@
+name: Test Library
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build and Test
+    steps:
+      - uses: actions/checkout@v2
+      - uses: purescript-contrib/setup-purescript@main
+      - run: spago build
+      - run: spago test --no-install

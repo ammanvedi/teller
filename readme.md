@@ -10,9 +10,11 @@
 
 </a>
 
+<a href="https://github.com/ammanvedi/teller/actions">
+
 <img src="https://github.com/ammanvedi/teller/workflows/Test%20Library/badge.svg" />
 
-
+</a>
 
 # Teller
 
@@ -28,13 +30,13 @@ Documentation is published on [Pursuit.](https://pursuit.purescript.org/packages
 
 `npm install teller-js`
 
-__Teller provides its own Typescript definitions__
+**Teller provides its own Typescript definitions**
 
 ## Examples
 
 ### Trends
 
-````typescript
+```typescript
 // Given some transaction data
 import {
   identifyTrends,
@@ -43,15 +45,14 @@ import {
 } from "teller-js";
 
 const transactions = [
-    {
+  {
     accountId: "8Ybo8ppEBrHxJM45p7koSvaKQnM341fyMKQwO",
     timestamp: 1586473200000.0,
     amount: 0.01,
     merchantName: "Asda",
     reference: "Asda",
   },
-  ...
-  {
+  ...{
     accountId: "8Ybo8ppEBrHxJM45p7koSvaKQnM341fyMKQwO",
     timestamp: 1586300400000.0,
     amount: -60.0,
@@ -65,9 +66,9 @@ const result = identifyTrends(transactions);
 result.forEach((tr) => {
   const merchant = tr.value0;
   const trend = tr.value1;
-	
+
   // See dist/index.d.ts for a full list of all potential trend description types
-  
+
   if (isEveryWeekdayTrendDescription(trend)) {
     console.log(`${merchant} transaction happens every day`);
   }
@@ -80,10 +81,10 @@ result.forEach((tr) => {
     );
   }
 });
-````
+```
 
 ## Further Work
 
 1. Surface algorithm confidence as a percentage in the trend description result
 2. Return the prediction for the price that will be paid given a trend so the trend can be used for prediction
-3. Given a start and an end date forecast spending and income 
+3. Given a start and an end date forecast spending and income

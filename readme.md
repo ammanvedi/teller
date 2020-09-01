@@ -1,7 +1,3 @@
-# Teller
-
-
-
 <a href="https://pursuit.purescript.org/packages/purescript-teller/10.1.4/docs/Data.Teller">
 
 <img src="https://pursuit.purescript.org/packages/purescript-teller/badge" />
@@ -14,7 +10,11 @@
 
 </a>
 
+<img src="https://github.com/ammanvedi/teller/workflows/Test%20Library/badge.svg" />
 
+
+
+# Teller
 
 Teller provides trend identification and forecasting facilities based on bank transactions. Teller can be used from both Purescript and Javascript/Typescript.
 

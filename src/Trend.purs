@@ -14,12 +14,21 @@ import Data.Teller.Transaction (TransactionRec, getBinaryHeartbeat, transactionD
 import Data.Tuple (Tuple(..), snd)
 import Prelude (bind, pure, ($), (<), (<>))
 
+import Debug.Trace
+
 identifyTrend :: String -> Array TransactionRec -> Maybe TrendDescription
 identifyTrend m xs =
     if period < 32.0
         then do
             matchers <- pure $ (reverse $ sort $ getMatcherResults xs)
-            maxMatch <- maximum matchers
+            x <- pure $ spy "merchant"
+                -- at this point we are going to get matcher results that have the same percentage
+                -- and we need some way to deterministically choose between them
+                -- perhaps we could bias the match toward values that match later in the string
+                -- so that the matcher that was correct most recently is chosen
+                -- otherwise we might end up getting different answers depending on
+                -- what machine we run code on
+            maxMatch <- maximum (spy "matchers" matchers)
             winningTrend <- Just (snd $ unwrap maxMatch)
             pure $ addPricingToTrend xs winningTrend
         else

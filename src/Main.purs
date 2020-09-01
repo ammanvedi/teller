@@ -19,3 +19,5 @@ isSpecificWeekdayTrendDescription = GT.isSpecificWeekdayTrendDescription
 isWeekdayTrendDescription = GT.isWeekdayTrendDescription
 isEveryWeekdayTrendDescription = GT.isEveryWeekdayTrendDescription
 isWeekendTrendDescription = GT.isWeekendTrendDescription
+
+x = "test"

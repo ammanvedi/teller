@@ -10,4 +10,4 @@ git commit -m "update package json version"
 spago bump-version $bumpVersion --no-dry-run
 git push --follow-tags
 npm publish
-echo "PLEASE RUN \"pulp publish --no-push\" to publish to pursuit"
+pulp publish --no-push

@@ -2,7 +2,7 @@ module Data.Teller.SignalProcessing where
 
 import Prelude
 
-import Math (log)
+import Math (log, pow)
 import Data.Array (filter, fromFoldable, head, index, last, length, mapWithIndex, slice, sort, zip)
 import Data.Foldable (foldl, sum)
 import Data.FoldableWithIndex (foldlWithIndex)
@@ -229,3 +229,28 @@ gilbertAndWellsSimilarity as bs =
         cnum = toNumber c
         dnum = toNumber d
         nnum = toNumber n
+
+e :: Number
+e = 2.718
+
+weightFunction :: Number -> Number -> Number -> Number -> Number
+weightFunction wDelta n wMin x =
+  linearTerm + expTerm
+  where
+    linearTerm = ((wDelta / n) * x) + wMin
+    expTerm = pow e (x - n)
+
+hammingDistanceWeighted :: Array Int -> Array Int -> Number
+hammingDistanceWeighted xs ys = 
+  foldlWithIndex (\i acc (Tuple a b) -> 
+      if a /= b 
+        then (acc + (1.0 * (weightFn $ toNumber i))) 
+        else acc
+    ) 0.0 (zip xs ys)
+    where
+      arrLen = toNumber $ length xs
+      weightFn = weightFunction 0.25 arrLen 1.0
+
+invertValue :: Number -> Number
+invertValue 0.0 = 1.0
+invertValue n = 1.0 / n

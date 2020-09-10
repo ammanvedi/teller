@@ -1,5 +1,7 @@
 module Data.Teller.Trend where
 
+import Debug.Trace
+
 import Data.Array (fromFoldable, head, last, reverse, sort)
 import Data.Date (Date)
 import Data.Foldable (foldl, maximum)
@@ -9,12 +11,10 @@ import Data.Newtype (unwrap)
 import Data.Teller.GenTypes (HeartbeatMatchResult(..), HeartbeatMatcher(..), TrendDescription)
 import Data.Teller.HeartbeatGen (allHeartbeatMatchers, generateHeartbeat)
 import Data.Teller.Price (addPricingToTrend)
-import Data.Teller.SignalProcessing (estimatePeriod, naiveSignalMatch)
+import Data.Teller.SignalProcessing (estimatePeriod, hammingDistanceWeighted, invertValue, naiveSignalMatch)
 import Data.Teller.Transaction (TransactionRec, getBinaryHeartbeat, transactionDate, transactionsForMerchant, uniqueMerchants)
 import Data.Tuple (Tuple(..), snd)
 import Prelude (bind, pure, ($), (<), (<>))
-
-import Debug.Trace
 
 identifyTrend :: String -> Array TransactionRec -> Maybe TrendDescription
 identifyTrend m xs =
@@ -56,7 +56,7 @@ matchAgainstHeartbeat dStart dEnd hb (HeartbeatMatcher (Tuple genFunc desc)) =
     HeartbeatMatchResult $ Tuple signalMatch desc
     where
         generatedHb = generateHeartbeat dStart dEnd genFunc
-        signalMatch = naiveSignalMatch generatedHb hb
+        signalMatch = invertValue $ hammingDistanceWeighted generatedHb hb
 
 getMatcherResults :: Array TransactionRec -> Array HeartbeatMatchResult
 getMatcherResults [] = []

@@ -203,8 +203,8 @@ realTransactions =
             accountId: "8Ybo8ppEBrHxJM45p7koSvaKQnM341fyMKQwO",
             timestamp: 1585267200000.0,
             amount: -2919.58,
-            merchantName: "WORK A T LTD Lifeworks BGC",
-            reference: "WORK A T LTD Lifeworks BGC"
+            merchantName: "Test Income",
+            reference: "Test Income"
         })
 ,
       TransactionRec ({
@@ -619,8 +619,8 @@ realTransactions =
             accountId: "8Ybo8ppEBrHxJM45p7koSvaKQnM341fyMKQwO",
             timestamp: 1582848000000.0,
             amount: -2919.58,
-            merchantName: "WORK A T LTD Lifeworks BGC",
-            reference: "WORK A T LTD Lifeworks BGC"
+            merchantName: "Test Income",
+            reference: "Test Income"
         })
 ,
       TransactionRec ({
@@ -825,15 +825,7 @@ realTransactions =
 ,
       TransactionRec ({
             accountId: "8Ybo8ppEBrHxJM45p7koSvaKQnM341fyMKQwO",
-            timestamp: 1581811200000.0,
-            amount: 2.80,
-            merchantName: "Transport for London",
-            reference: "Transport for London"
-        })
-,
-      TransactionRec ({
-            accountId: "8Ybo8ppEBrHxJM45p7koSvaKQnM341fyMKQwO",
-            timestamp: 1581811200000.0,
+            timestamp: 1581811200000.0, -- sunday feb 16 2020
             amount: 3.00,
             merchantName: "Transport for London",
             reference: "Transport for London"
@@ -845,14 +837,6 @@ realTransactions =
             amount: -60.00,
             merchantName: "201053 53364402 MOBILE-CHANNEL FT",
             reference: "201053 53364402 MOBILE-CHANNEL FT"
-        })
-,
-      TransactionRec ({
-            accountId: "8Ybo8ppEBrHxJM45p7koSvaKQnM341fyMKQwO",
-            timestamp: 1581724800000.0,
-            amount: 7.80,
-            merchantName: "Transport for London",
-            reference: "Transport for London"
         })
 ,
       TransactionRec ({
@@ -1235,8 +1219,8 @@ realTransactions =
             accountId: "8Ybo8ppEBrHxJM45p7koSvaKQnM341fyMKQwO",
             timestamp: 1579824000000.0,
             amount: -2919.58,
-            merchantName: "WORK A T LTD Lifeworks BGC",
-            reference: "WORK A T LTD Lifeworks BGC"
+            merchantName: "Test Income",
+            reference: "Test Income"
         })
 ,
       TransactionRec ({
@@ -1313,7 +1297,7 @@ realTransactions =
 ,
       TransactionRec ({
             accountId: "8Ybo8ppEBrHxJM45p7koSvaKQnM341fyMKQwO",
-            timestamp: 1579392000000.0,
+            timestamp: 1579392000000.0, -- sun jan 19 2019
             amount: 2.80,
             merchantName: "Transport for London",
             reference: "Transport for London"

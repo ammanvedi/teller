@@ -10,8 +10,6 @@ import Data.Int (toNumber)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Ord (abs)
 import Data.Set as Set
-import Data.Show (class Show, show)
-import Data.Eq (class Eq)
 import Data.Tuple (Tuple(..), snd, fst)
 
 newtype IndexedTuple = IndexedTuple (Tuple Int Number)

@@ -1,7 +1,5 @@
 module Data.Teller.Trend where
 
-import Debug.Trace
-
 import Data.Array (fromFoldable, head, last, reverse, sort)
 import Data.Date (Date)
 import Data.Foldable (foldl, maximum)
@@ -11,7 +9,7 @@ import Data.Newtype (unwrap)
 import Data.Teller.GenTypes (HeartbeatMatchResult(..), HeartbeatMatcher(..), TrendDescription)
 import Data.Teller.HeartbeatGen (allHeartbeatMatchers, generateHeartbeat)
 import Data.Teller.Price (addPricingToTrend)
-import Data.Teller.SignalProcessing (estimatePeriod, hammingDistanceWeighted, invertValue, naiveSignalMatch)
+import Data.Teller.SignalProcessing (estimatePeriod, hammingDistanceWeighted, invertValue)
 import Data.Teller.Transaction (TransactionRec, getBinaryHeartbeat, transactionDate, transactionsForMerchant, uniqueMerchants)
 import Data.Tuple (Tuple(..), snd)
 import Prelude (bind, pure, ($), (<), (<>))
@@ -21,14 +19,13 @@ identifyTrend m xs =
     if period < 32.0
         then do
             matchers <- pure $ (reverse $ sort $ getMatcherResults xs)
-            x <- pure $ spy "merchant"
-                -- at this point we are going to get matcher results that have the same percentage
-                -- and we need some way to deterministically choose between them
-                -- perhaps we could bias the match toward values that match later in the string
-                -- so that the matcher that was correct most recently is chosen
-                -- otherwise we might end up getting different answers depending on
-                -- what machine we run code on
-            maxMatch <- maximum (spy "matchers" matchers)
+            -- at this point we are going to get matcher results that have the same percentage
+            -- and we need some way to deterministically choose between them
+            -- perhaps we could bias the match toward values that match later in the string
+            -- so that the matcher that was correct most recently is chosen
+            -- otherwise we might end up getting different answers depending on
+            -- what machine we run code on
+            maxMatch <- maximum matchers
             winningTrend <- Just (snd $ unwrap maxMatch)
             pure $ addPricingToTrend xs winningTrend
         else
@@ -42,14 +39,14 @@ identifyTrends :: Array TransactionRec -> Array (Tuple String TrendDescription)
 identifyTrends xs =
     foldl (\ acc merchant ->
         case (identifyTrend merchant 
-            $ sort 
-            $ transactionsForMerchant xs merchant
+            $ transactionsForMerchant sortedTransactions merchant
             ) of
             (Just t) -> acc <> [Tuple merchant t]
             Nothing -> acc
         ) [] merchants
     where
-        merchants = fromFoldable $ uniqueMerchants xs
+        sortedTransactions = sort xs
+        merchants = fromFoldable $ uniqueMerchants sortedTransactions
 
 matchAgainstHeartbeat :: Date -> Date -> Array Int -> HeartbeatMatcher -> HeartbeatMatchResult
 matchAgainstHeartbeat dStart dEnd hb (HeartbeatMatcher (Tuple genFunc desc)) =
@@ -74,8 +71,7 @@ getMatcherResults xs =
             endTrans <- last xs
             startDate <- transactionDate startTrans
             endDate <- transactionDate endTrans
-            pure (Tuple startDate endDate)
-
+            pure $ (Tuple startDate endDate)
 
 -- TODO: More test cases for getMatcherResults
 -- calculate the price that is being paid for a trend

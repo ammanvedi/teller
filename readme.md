@@ -24,7 +24,7 @@ Teller provides trend identification and forecasting facilities based on bank tr
 
 ### Purescript
 
-Documentation is published on [Pursuit.](https://pursuit.purescript.org/packages/purescript-teller/10.1.4/docs/Data.Teller)
+Documentation is published on [Pursuit.](https://pursuit.purescript.org/packages/purescript-teller)
 
 ### Javascript & Typescript
 

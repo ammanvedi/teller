@@ -87,7 +87,6 @@ result.forEach((tr) => {
 ## Further Work
 
 1. Surface algorithm confidence as a percentage in the trend description result
-2. Return the prediction for the price that will be paid given a trend so the trend can be used for prediction
-3. Given a start and an end date forecast spending income and balance for each day in the period
-4. Given a set of transactions and a trend identify if the trend is holding recently
-5. Treat identified trends as fixed costs and provide a estimation of a persons monthly fixed costs
+2. Given a start and an end date forecast spending income and balance for each day in the period
+3. Given a set of transactions and a trend identify if the trend is holding recently
+4. Treat identified trends as fixed costs and provide a estimation of a persons monthly fixed costs

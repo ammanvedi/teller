@@ -97,7 +97,5 @@ export type Trends = Array<TrendStruct>;
 export function identifyTrends(records: Array<TransactionRec>): Trends;
 
 export function forecast(
-  startDateMs: number,
-  endDateMs: number,
-  trends: Trends
-): Forecast;
+  startDateMs: number
+): (endDateMs: number) => (trends: Trends) => Forecast;

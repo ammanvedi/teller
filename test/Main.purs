@@ -4,6 +4,7 @@ import Effect (Effect)
 import Effect.Aff (launchAff_)
 import Prelude (Unit, discard, ($))
 import Test.Date (dateSpec)
+import Test.Forecast (forecastSpec)
 import Test.HeartbeatGen (heartbeatGenSpec)
 import Test.Price (priceSpec)
 import Test.SignalProcessing (signalProcessingSpec)
@@ -20,3 +21,4 @@ main = launchAff_ $ runSpec [specReporter] do
     heartbeatGenSpec
     trendSpec
     priceSpec
+    forecastSpec

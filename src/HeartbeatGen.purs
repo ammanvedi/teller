@@ -1,6 +1,6 @@
 module Data.Teller.HeartbeatGen where
 
-import Data.Array ((..), (!!))
+import Data.Array ((..), (!!), elemIndex)
 import Data.Date (Date, Day, adjust, day, diff, lastDayOfMonth, month, weekday, year)
 import Data.Date.Component (Weekday(..))
 import Data.Enum (fromEnum, toEnum)
@@ -13,6 +13,7 @@ import Data.Newtype (unwrap)
 import Data.String (length)
 import Data.String.Common (split)
 import Data.String.Pattern (Pattern(..))
+import Data.Teller.DateHelpers (iterateDateRange)
 import Data.Teller.GenTypes (HeartbeatGeneratorFn, HeartbeatMatcher(..), TrendDescription(..))
 import Data.Time.Duration (Days(..))
 import Data.Tuple (Tuple(..))
@@ -51,22 +52,9 @@ createAllBinaryPermutationsOfLength i =
         numList = (1..(binMax))
         binaryStrings = map (\xi -> numberToPaddedBinaryString xi i) numList
 
-safeAdjust :: Days -> Date -> Date
-safeAdjust d dt =
-    case maybeRes of
-        Just dtx -> dtx
-        Nothing -> dt
-    where
-        maybeRes = adjust d dt
-
 generateHeartbeat :: Date -> Date -> HeartbeatGeneratorFn -> Array Int
 generateHeartbeat dStart dEnd genFunc =
-    foldl (\ acc dateIndex -> acc <> [(genFunc (safeAdjust (Days $ toNumber dateIndex) dStart))] ) [] dateIndexes
-    where
-        dateDelta :: Days
-        dateDelta = diff dEnd dStart
-        deltaInt = floor $ unwrap dateDelta
-        dateIndexes = 0..deltaInt
+    iterateDateRange dStart dEnd genFunc
 
 -- Generators
 genEveryDay :: HeartbeatGeneratorFn
@@ -134,6 +122,14 @@ createMonthlyMatchers =
             Tuple (genXthDayOfMonth i) 
             (MonthDayTrendDescription { dayOfMonth: i, pricing: 0.0 })
         ) ) (1..31)
+
+weekdayNumbersToBinarySequence :: Array Int -> Array Int
+weekdayNumbersToBinarySequence xs = 
+    map (\i -> (
+        case elemIndex i xs of
+            (Just _) -> 1
+            Nothing -> 0
+    )) (1..7)
 
 binaryWeekPatternToMatcher :: Array Int -> HeartbeatGeneratorFn
 binaryWeekPatternToMatcher xs dt = 

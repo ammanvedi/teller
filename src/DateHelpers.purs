@@ -1,10 +1,14 @@
 module Data.Teller.DateHelpers where
 
 import Prelude
-import Data.Date (Date, adjust, canonicalDate, month, year)
+
+import Data.Array ((..))
+import Data.Date (Date, adjust, canonicalDate, diff, month, year)
 import Data.Enum (toEnum)
-import Data.Int (toNumber)
+import Data.Foldable (foldl)
+import Data.Int (toNumber, floor)
 import Data.Maybe (Maybe(..))
+import Data.Newtype (unwrap)
 import Data.Time.Duration (Days(..))
 
 getStartOfMonth :: Date -> Maybe Date
@@ -28,3 +32,20 @@ maybeDateToString d =
     case d of 
         (Just dt) -> show dt
         Nothing -> "NODATE"
+
+safeAdjust :: Days -> Date -> Date
+safeAdjust d dt =
+    case maybeRes of
+        Just dtx -> dtx
+        Nothing -> dt
+    where
+        maybeRes = adjust d dt
+
+iterateDateRange :: forall a. Date -> Date -> (Date -> a) -> Array a
+iterateDateRange dStart dEnd mapper =
+    foldl (\ acc dateIndex -> acc <> [(mapper (safeAdjust (Days $ toNumber dateIndex) dStart))] ) [] dateIndexes
+    where
+        dateDelta :: Days
+        dateDelta = diff dEnd dStart
+        deltaInt = floor $ unwrap dateDelta
+        dateIndexes = 0..deltaInt

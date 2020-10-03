@@ -77,13 +77,27 @@ export function isWeekendTrendDescription(
 
 export type MerchantName = string;
 
-export class Tuple<A, B> {
-  value0: A;
-  value1: B;
-}
+export type TrendStruct = {
+  id: string;
+  trend: TrendDescription;
+  merchant: string;
+};
 
-export type TrendTuple = Tuple<string, TrendDescription>;
+export type ForecastedDay = {
+  dateTimestampMs: number;
+  trendIds: Array<string>;
+};
 
-export type Trends = Array<TrendTuple>;
+export type Forecast = {
+  days: Array<ForecastedDay>;
+};
+
+export type Trends = Array<TrendStruct>;
 
 export function identifyTrends(records: Array<TransactionRec>): Trends;
+
+export function forecast(
+  startDate: Date,
+  endDate: Date,
+  trends: Trends
+): Forecast;

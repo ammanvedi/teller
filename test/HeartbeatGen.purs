@@ -4,7 +4,7 @@ import Data.Date (Date, canonicalDate)
 import Data.Date.Component (Weekday(..))
 import Data.Enum (toEnum)
 import Data.Maybe (fromMaybe)
-import Data.Teller.HeartbeatGen (createAllBinaryPermutationsOfLength, genEveryDay, genLastWeekDay, genWeekday, genWeekend, genXthDayOfMonth, generateHeartbeat, getOccurringWeekdays, numberToPaddedBinaryString, padStringLeftWith)
+import Data.Teller.HeartbeatGen (createAllBinaryPermutationsOfLength, genEveryDay, genLastWeekDay, genWeekday, genWeekend, genXthDayOfMonth, generateHeartbeat, getOccurringWeekdays, numberToPaddedBinaryString, padStringLeftWith, weekdayNumbersToBinarySequence)
 import Prelude (Unit, bottom, discard)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
@@ -36,6 +36,16 @@ testEndLastX = canonicalDate
 heartbeatGenSpec :: Spec Unit
 heartbeatGenSpec =
     describe "Heartbeat Generator" do
+        describe "weekdayNumbersToBinarySequence" do
+            it "should return zeroed list given an empty list" do
+                let res = weekdayNumbersToBinarySequence []
+                res `shouldEqual` [0, 0, 0, 0, 0, 0, 0]
+            it "should return zeroed list when given numbers that are out of range" do
+                let res = weekdayNumbersToBinarySequence [100, 50, 8, 0]
+                res `shouldEqual` [0, 0, 0, 0, 0, 0, 0]
+            it "should return correctly when given correct input" do
+                let res = weekdayNumbersToBinarySequence [1, 3, 5]
+                res `shouldEqual` [1, 0, 1, 0, 1, 0, 0]     
         describe "getOccurringWeekdays" do
             it "should return the correct occurring weekdays" do
               let res = getOccurringWeekdays [0, 1, 0, 1, 0, 1, 1]

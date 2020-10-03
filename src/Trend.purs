@@ -6,6 +6,7 @@ import Data.Foldable (foldl, maximum)
 import Data.Functor (map)
 import Data.Maybe (Maybe(..))
 import Data.Newtype (unwrap)
+import Data.Teller.Forecast (TrendDescriptionStruct, trendTupleToStruct)
 import Data.Teller.GenTypes (HeartbeatMatchResult(..), HeartbeatMatcher(..), TrendDescription)
 import Data.Teller.HeartbeatGen (allHeartbeatMatchers, generateHeartbeat)
 import Data.Teller.Price (addPricingToTrend)
@@ -35,13 +36,15 @@ identifyTrend m xs =
         period = estimatePeriod heartbeat
 
 -- Holy grail function
-identifyTrends :: Array TransactionRec -> Array (Tuple String TrendDescription)
+identifyTrends :: Array TransactionRec -> Array TrendDescriptionStruct
 identifyTrends xs =
     foldl (\ acc merchant ->
         case (identifyTrend merchant 
             $ transactionsForMerchant sortedTransactions merchant
             ) of
-            (Just t) -> acc <> [Tuple merchant t]
+            (Just t) -> acc <> [
+                trendTupleToStruct $ Tuple merchant t
+                ]
             Nothing -> acc
         ) [] merchants
     where
@@ -72,12 +75,3 @@ getMatcherResults xs =
             startDate <- transactionDate startTrans
             endDate <- transactionDate endTrans
             pure $ (Tuple startDate endDate)
-
--- TODO: More test cases for getMatcherResults
--- calculate the price that is being paid for a trend
--- create pipeline, split by merchant -> identify if trend is random process through autocorrelation-> find best match trend for each 
--- given a transaction does it belong to a trend from a given set of trends
-
--- need to either have matchers for every combination of days in a week
--- or need to allow the top N matches through
--- this is exemplified by the train matcher only atm returning that the transaction occurrs every tuesday

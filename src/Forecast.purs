@@ -1,19 +1,19 @@
 module Data.Teller.Forecast where
 
-import Data.Eq (class Eq, (==))
-import Data.Show (class Show)
-
 import Data.Array (length, snoc, union)
 import Data.Date (Date, Weekday(..))
 import Data.DateTime.Instant (fromDate, unInstant)
 import Data.Enum (toEnumWithDefaults)
+import Data.Eq (class Eq, (==))
 import Data.Foldable (foldl)
-import Data.Teller.DateHelpers (iterateDateRange)
+import Data.Maybe (Maybe(..))
+import Data.Show (class Show)
+import Data.Teller.DateHelpers (dateFromMs, iterateDateRange)
 import Data.Teller.GenTypes (HeartbeatGeneratorFn, TrendDescription(..))
 import Data.Teller.HeartbeatGen (binaryWeekPatternToMatcher, genLastWeekDay, genSpecificWeekday, genWeekday, genWeekend, genXthDayOfMonth, weekdayNumbersToBinarySequence)
 import Data.Time.Duration (Milliseconds(..))
 import Data.Tuple (Tuple(..))
-import Prelude (show, ($), (<>), (&&))
+import Prelude (show, ($), (<>), (&&), bind, pure)
 
 newtype TrendDescriptionStruct = TrendDescriptionStruct {
     id :: String,
@@ -124,11 +124,15 @@ createForecastForDay ts dt =
         ids = pickTrendsOccurringOnDay dt ts
 
 -- Holy grail function
-forecast :: Date -> Date -> Array TrendDescriptionStruct -> Forecast
-forecast sDate eDate trends = 
-    Forecast {
-        days: forecastedDays
-    }
+forecast :: Number -> Number -> Array TrendDescriptionStruct -> Forecast
+forecast sDate eDate trends = do
+    case forecastedDays of 
+        (Just f) -> Forecast { days: f }
+        Nothing -> Forecast { days: [] }
+
     where 
         dayForecaster = createForecastForDay trends
-        forecastedDays = iterateDateRange sDate eDate dayForecaster
+        forecastedDays = do
+            s <- dateFromMs sDate
+            e <- dateFromMs eDate
+            pure $ iterateDateRange s e dayForecaster

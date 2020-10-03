@@ -4,12 +4,14 @@ import Prelude
 
 import Data.Array ((..))
 import Data.Date (Date, adjust, canonicalDate, diff, month, year)
+import Data.DateTime.Instant (instant, toDateTime)
+import Data.DateTime (date)
 import Data.Enum (toEnum)
 import Data.Foldable (foldl)
 import Data.Int (toNumber, floor)
 import Data.Maybe (Maybe(..))
 import Data.Newtype (unwrap)
-import Data.Time.Duration (Days(..))
+import Data.Time.Duration (Days(..), Milliseconds(..))
 
 getStartOfMonth :: Date -> Maybe Date
 getStartOfMonth nowDate = do
@@ -49,3 +51,11 @@ iterateDateRange dStart dEnd mapper =
         dateDelta = diff dEnd dStart
         deltaInt = floor $ unwrap dateDelta
         dateIndexes = 0..deltaInt
+
+dateFromMs :: Number -> Maybe Date
+dateFromMs ms = 
+    case i of
+        (Just inst) -> Just (date $ toDateTime inst)
+        Nothing -> Nothing
+    where
+        i = instant $ Milliseconds ms

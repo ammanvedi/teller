@@ -69,7 +69,7 @@ startDate =
     (Just inst) -> pure (date $ toDateTime $ inst)
     Nothing -> Nothing
   where
-    i = instant $ Milliseconds 1603580400000.0 -- 24 oct 2020
+    i = instant $ Milliseconds 1603580400000.0 
   
 endDate :: Maybe Date
 endDate = 
@@ -87,7 +87,7 @@ forecastSpec =
         res <- pure $ do
           s <- startDate
           e <- endDate
-          pure $ forecast s e testTrends
+          pure $ forecast 1603580400000.0 1604188800000.0 testTrends -- 24 oct 2020 ---> 1 nov 2020
         case res of
           (Just r) -> (show r) `shouldEqual` "[1603497600000.0[\"trendD\",\"trendF\"],1603584000000.0[\"trendA\",\"trendF\"],1603670400000.0[\"trendE\"],1603756800000.0[\"trendE\"],1603843200000.0[\"trendD\",\"trendE\"],1603929600000.0[\"trendB\",\"trendE\"],1604016000000.0[\"trendC\",\"trendD\",\"trendE\"],1604102400000.0[\"trendD\",\"trendF\"],1604188800000.0[\"trendF\"]]"
           Nothing -> false `shouldEqual` true

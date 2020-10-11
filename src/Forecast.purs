@@ -153,6 +153,7 @@ fixedCostsForDay tx (ForecastedDay { trendIds, dateTimestampMs }) =
         where
             getById = getTrendById tx
 
+-- TODO: is tis not really "change in balance over period"
 fixedCostsForPeriod :: Array TrendDescriptionStruct -> Forecast -> Number
 fixedCostsForPeriod ts (Forecast { days }) = 
     foldl (\acc day -> acc + (fcCalc day)) 0.0 days

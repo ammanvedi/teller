@@ -5,15 +5,16 @@ import Data.Date (Date, Weekday(..))
 import Data.DateTime.Instant (fromDate, unInstant)
 import Data.Enum (toEnumWithDefaults)
 import Data.Eq (class Eq, (==))
-import Data.Foldable (foldl)
+import Data.Foldable (foldl, find)
 import Data.Maybe (Maybe(..))
 import Data.Show (class Show)
-import Data.Teller.DateHelpers (dateFromMs, iterateDateRange)
+import Data.Teller.DateHelpers (dateFromMs, iterateDateRange, safeDateFromMs)
 import Data.Teller.GenTypes (HeartbeatGeneratorFn, TrendDescription(..))
 import Data.Teller.HeartbeatGen (binaryWeekPatternToMatcher, genLastWeekDay, genSpecificWeekday, genWeekday, genWeekend, genXthDayOfMonth, weekdayNumbersToBinarySequence)
+import Data.Teller.Price (getPricing)
 import Data.Time.Duration (Milliseconds(..))
 import Data.Tuple (Tuple(..))
-import Prelude (show, ($), (<>), (&&), bind, pure)
+import Prelude (show, ($), (<>), (&&), bind, pure, (+))
 
 newtype TrendDescriptionStruct = TrendDescriptionStruct {
     id :: String,
@@ -136,3 +137,30 @@ forecast sDate eDate trends = do
             s <- dateFromMs sDate
             e <- dateFromMs eDate
             pure $ iterateDateRange s e dayForecaster
+
+getTrendById :: Array TrendDescriptionStruct -> String -> Maybe TrendDescriptionStruct
+getTrendById tx id = find (\(TrendDescriptionStruct {id : tid}) -> id == tid) tx
+
+fixedCostsForDay :: Array TrendDescriptionStruct -> ForecastedDay -> Number
+fixedCostsForDay tx (ForecastedDay { trendIds, dateTimestampMs }) = 
+    foldl (\acc tid ->
+            case getById tid of
+                (Just (TrendDescriptionStruct { trend })) -> acc + 
+                    (getPricing trend (safeDateFromMs dateTimestampMs)
+                )
+                Nothing -> acc
+            ) 0.0 trendIds
+        where
+            getById = getTrendById tx
+
+fixedCostsForPeriod :: Array TrendDescriptionStruct -> Forecast -> Number
+fixedCostsForPeriod ts (Forecast { days }) = 
+    foldl (\acc day -> acc + (fcCalc day)) 0.0 days
+    where
+        fcCalc = fixedCostsForDay ts
+
+
+-- TODO FORECAST
+-- add "predictied net change in balance for period" to forecast
+-- add "predicted outgoings" for period
+--- add "predicted income" for period

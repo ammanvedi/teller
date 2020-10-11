@@ -3,10 +3,10 @@ module Data.Teller.DateHelpers where
 import Prelude
 
 import Data.Array ((..))
-import Data.Date (Date, adjust, canonicalDate, diff, month, year)
-import Data.DateTime.Instant (instant, toDateTime)
+import Data.Date (Date, adjust, canonicalDate, diff, month, weekday, year)
 import Data.DateTime (date)
-import Data.Enum (toEnum)
+import Data.DateTime.Instant (instant, toDateTime)
+import Data.Enum (fromEnum, toEnum)
 import Data.Foldable (foldl)
 import Data.Int (toNumber, floor)
 import Data.Maybe (Maybe(..))
@@ -59,3 +59,15 @@ dateFromMs ms =
         Nothing -> Nothing
     where
         i = instant $ Milliseconds ms
+
+safeDateFromMs :: Number -> Date
+safeDateFromMs ms =
+    case unsafeDt of
+        (Just d) -> d
+        Nothing -> canonicalDate bottom bottom bottom
+    where
+        unsafeDt = dateFromMs ms
+
+getWeekdayNumber :: Date -> Int
+getWeekdayNumber dt =
+    fromEnum (weekday dt)

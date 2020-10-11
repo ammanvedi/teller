@@ -28,11 +28,12 @@ data TrendDescription
             pricing :: (Array Number)
         }
     | EveryWeekdayTrendDescription {
-            pricing :: (Array Number)
+            pricing :: (Array Number) -- [mon, tue, wed, thu, fri]
         }
     | WeekendTrendDescription {
-            pricing :: (Array Number)
+            pricing :: (Array Number) -- [sat sun]
         }
+
 
 -- Since we have trouble exporting the type constructor
 -- we define functions we can use to determine if a

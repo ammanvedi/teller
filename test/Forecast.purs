@@ -1,17 +1,17 @@
 module Test.Forecast where
 
+import Data.Show
+
 import Data.DateTime (Date, date)
 import Data.DateTime.Instant (instant, toDateTime)
 import Data.Maybe (Maybe(..))
-
-import Data.Teller.Forecast (TrendDescriptionStruct(..), forecast, generateTrendId)
+import Data.Teller.Forecast (TrendDescriptionStruct(..), fixedCostsForPeriod, forecast, generateTrendId)
 import Data.Teller.GenTypes (TrendDescription(..))
 import Data.Time.Duration (Milliseconds(..))
 import Data.Tuple (Tuple(..))
 import Prelude (Unit, bind, discard, pure, ($))
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
-import Data.Show
 
 testTrends :: Array TrendDescriptionStruct
 testTrends = [
@@ -44,14 +44,14 @@ testTrends = [
     merchant: "D",
     trend: WeekdayTrendDescription {
       weekdays: [3, 6, 5],
-      pricing: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+      pricing: [1.0, 2.0, 3.0]
     }
   },
   TrendDescriptionStruct {
     id: "trendE",
     merchant: "E",
     trend: EveryWeekdayTrendDescription {
-      pricing: [100.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+      pricing: [100.0, 6.0, 3.0, 2.0, 8.0]
     }
   },
   TrendDescriptionStruct {
@@ -87,11 +87,19 @@ forecastSpec =
         res <- pure $ do
           s <- startDate
           e <- endDate
-          pure $ forecast 1603580400000.0 1604188800000.0 testTrends -- 24 oct 2020 ---> 1 nov 2020
+          pure $ forecast 1603580400000.0 1604188800000.0 testTrends -- sat 24 oct 2020 ---> sun 1 nov 2020
         case res of
           (Just r) -> (show r) `shouldEqual` "[1603497600000.0[\"trendD\",\"trendF\"],1603584000000.0[\"trendA\",\"trendF\"],1603670400000.0[\"trendE\"],1603756800000.0[\"trendE\"],1603843200000.0[\"trendD\",\"trendE\"],1603929600000.0[\"trendB\",\"trendE\"],1604016000000.0[\"trendC\",\"trendD\",\"trendE\"],1604102400000.0[\"trendD\",\"trendF\"],1604188800000.0[\"trendF\"]]"
           Nothing -> false `shouldEqual` true
-        
+      it "returns the correct fixed costs" do
+        res <- pure $ do
+          s <- startDate
+          e <- endDate
+          f <- pure $ forecast 1603580400000.0 1604188800000.0 testTrends
+          pure $ fixedCostsForPeriod testTrends f
+        case res of
+          (Just r) -> r `shouldEqual` 687.0
+          Nothing -> false `shouldEqual` true
     describe "generateTrendId" do
       it "returns the correct id for MonthDayTrendDescription" do
         let res = generateTrendId (
